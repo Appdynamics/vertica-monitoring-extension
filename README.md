@@ -75,7 +75,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 | Param | Description |
 | ----- | ----- |
 | host | Vertica host  |
-| port | Vertica port. default port is 5433 |
+| port | Vertica port. Default port is 5433 |
 | database | Database name you want to connect to |
 | user | user name |
 | password | password |
