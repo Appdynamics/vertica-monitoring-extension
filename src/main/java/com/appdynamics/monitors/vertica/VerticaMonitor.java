@@ -11,6 +11,7 @@ import com.appdynamics.monitors.vertica.stats.ResourceUsageStats;
 import com.appdynamics.monitors.vertica.stats.StatsCollector;
 import com.appdynamics.monitors.vertica.stats.SystemResourceUsageStats;
 import com.appdynamics.monitors.vertica.stats.SystemStats;
+import com.google.common.base.Strings;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
@@ -41,10 +42,16 @@ public class VerticaMonitor extends AManagedMonitor {
     public TaskOutput execute(Map<String, String> taskArgs, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
 
         LOG.info("Vertica monitor started collecting stats");
-        
+
         String host = taskArgs.get("host");
         String port = taskArgs.get("port");
         String database = taskArgs.get("database");
+
+        if (Strings.isNullOrEmpty(host) || Strings.isNullOrEmpty(port) || Strings.isNullOrEmpty(database)) {
+            LOG.error("Please specify required parameters in monitor.xml");
+            throw new TaskExecutionException("Please specify required parameters in monitor.xml");
+        }
+
         String user = taskArgs.get("user");
         String password = taskArgs.get("password");
 
@@ -108,9 +115,13 @@ public class VerticaMonitor extends AManagedMonitor {
         }
 
         Properties properties = new Properties();
-        properties.put("user", user);
-        properties.put("password", password);
         properties.put("ReadOnly", "true");
+        if(!Strings.isNullOrEmpty(user)) {
+            properties.put("user", user);
+        }
+        if(!Strings.isNullOrEmpty(password)) {
+            properties.put("password", password);
+        }
 
         String url = MessageFormat.format(CONNECTION_URL, host, port, database);
         try {
