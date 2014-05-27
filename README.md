@@ -229,7 +229,7 @@ Provides history about system resources, such as memory, CPU, network, disk, I/O
 
 
 ## Custom Dashboard ##
-![]()
+![](https://github.com/Appdynamics/vertica-monitoring-extension/raw/master/vertica_dashboard.png)
 
 ##Contributing
 
