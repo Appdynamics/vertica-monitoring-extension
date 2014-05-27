@@ -2,7 +2,7 @@
 
 ##Use Case
 
-The Vertica Monitoring Extension collects the stats from Vertica DB and reports them to the AppDynamics Controller.
+The Vertica Monitoring Extension collects the stats by querying Vertica DB system tables and reports them to the AppDynamics Controller.
 
 This extension works only with the standalone machine agent.
 
