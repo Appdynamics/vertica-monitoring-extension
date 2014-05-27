@@ -14,7 +14,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 ##Installing Vertica
 
 1. Download the HP Vertica server package.
-2. Login as root
+2. Login as root   
    su - root   
    password: root-password   
 3. Use one of the following commands to run package installer:
