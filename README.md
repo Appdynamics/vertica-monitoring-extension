@@ -67,7 +67,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 </tbody>
 </table>
 
-##XML Examples
+## Config files
 
 ###  config.yml
 
