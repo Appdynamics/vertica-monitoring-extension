@@ -16,9 +16,9 @@ public class QueryMetricsStats {
             new ColumnWithConverter("running_query_count", Converters.toLongConverter()),
             new ColumnWithConverter("executed_query_count", Converters.toLongConverter()));
     public static final String QUERY = "SELECT * FROM QUERY_METRICS;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|Query Metrics";
+    public static final String METRIC_PATH = "Query Metrics";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

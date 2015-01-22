@@ -20,9 +20,9 @@ public class ResourceUsageStats {
             new ColumnWithConverter("total_row_count", Converters.toLongConverter()),
             new ColumnWithConverter("total_used_bytes", Converters.toLongConverter()));
     public static final String QUERY = "SELECT * FROM RESOURCE_USAGE;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|Resource Usage";
+    public static final String METRIC_PATH = "Resource Usage";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

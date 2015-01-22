@@ -14,9 +14,9 @@ public class SystemResourceUsageStats {
             new ColumnWithConverter("io_read_kbytes_per_second", Converters.toFloatConverter()),
             new ColumnWithConverter("io_written_kbytes_per_second", Converters.toFloatConverter()));
     public static final String QUERY = "SELECT * FROM SYSTEM_RESOURCE_USAGE LIMIT 1;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|System Resource Usage";
+    public static final String METRIC_PATH = "System Resource Usage";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

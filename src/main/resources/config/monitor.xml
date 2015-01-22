@@ -12,11 +12,7 @@
                 <type>java</type>
                 <execution-timeout-in-secs>60</execution-timeout-in-secs>
                 <task-arguments>
-                    <argument name="host" is-required="true" default-value="172.16.4.175" />
-                    <argument name="port" is-required="true" default-value="5433" />
-                    <argument name="database" is-required="true" default-value="vmartdb" />
-                    <argument name="user" is-required="false" default-value="dbadmin" />
-                    <argument name="password" is-required="false" default-value="admin" />
+                    <argument name="config-file" is-required="true" default-value="monitors/VerticaMonitor/config.yml" />
 		       </task-arguments>
                 <java-task>
                     <classpath>vertica-monitoring-extension.jar</classpath>

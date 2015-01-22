@@ -13,9 +13,9 @@ public class SystemStats {
             new ColumnWithConverter("node_down_count", Converters.toLongConverter()),
             new ColumnWithConverter("current_fault_tolerance", Converters.toLongConverter()));
     public static final String QUERY = "SELECT * FROM SYSTEM;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|System";
+    public static final String METRIC_PATH = "System";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

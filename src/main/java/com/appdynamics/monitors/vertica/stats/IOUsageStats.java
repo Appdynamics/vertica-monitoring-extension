@@ -12,9 +12,9 @@ public class IOUsageStats {
             new ColumnWithConverter("written_kbytes_per_sec", Converters.toFloatConverter()));
 
     public static final String QUERY = "SELECT * FROM IO_USAGE;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|IO Usage";
+    public static final String METRIC_PATH = "IO Usage";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

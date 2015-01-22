@@ -12,9 +12,9 @@ public class ActiveEventsStats {
             new ColumnWithConverter("event_posted_count", Converters.toLongConverter()));
 
     public static final String QUERY = "SELECT * FROM ACTIVE_EVENTS";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|Active Events";
+    public static final String METRIC_PATH = "Active Events";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

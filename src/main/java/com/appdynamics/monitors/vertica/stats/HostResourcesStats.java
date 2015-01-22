@@ -26,9 +26,9 @@ public class HostResourcesStats {
             new ColumnWithConverter("disk_space_used_mb", Converters.toLongConverter()),
             new ColumnWithConverter("disk_space_total_mb", Converters.toLongConverter()));
     public static final String QUERY = "SELECT * FROM HOST_RESOURCES;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|Host Resources";
+    public static final String METRIC_PATH = "Host Resources";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 }

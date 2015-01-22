@@ -19,6 +19,9 @@ public class StringToLongConverter implements Converter<Long> {
 
     public Long convert(String value) {
         value = removeExtra(value);
+        if(value == null) {
+            return null;
+        }
         return Long.valueOf(value);
     }
 

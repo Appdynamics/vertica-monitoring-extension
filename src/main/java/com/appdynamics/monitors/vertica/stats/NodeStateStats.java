@@ -9,10 +9,10 @@ public class NodeStateStats {
     public static final List<ColumnWithConverter> STAT_COLUMNS = Lists.newArrayList(
             new ColumnWithConverter("node_state", Converters.toLongConverter(NodeState.class)));
     public static final String QUERY = "SELECT * FROM NODE_STATES LIMIT 1;";
-    public static final String METRIC_PATH = "Custom Metrics|Vertica|Node State";
+    public static final String METRIC_PATH = "Node State";
 
-    public static StatsRequest request() {
-        return new StatsRequest(QUERY, METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
+    public static StatsRequest request(String metricPrefix) {
+        return new StatsRequest(QUERY, metricPrefix+METRIC_PATH, APPENDER_COLUMNS, STAT_COLUMNS);
     }
 
     public enum NodeState {
