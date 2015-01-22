@@ -83,6 +83,22 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 | sysTables | System table names for which metrics has to be collected |
 
 ~~~~
+# Vertica Instance
+host: "localhost"
+port: 5433
+database: "vmartdb"
+user: "dbadmin"
+password: "admin"
+
+metricPrefix:  "Custom Metrics|Vertica|"
+
+#System tables for which stats has to be shown. Supported values are ACTIVE_EVENTS, DISK_STORAGE, HOST_RESOURCES, IO_USAGE,
+# NODE_STATES, QUERY_METRICS, RESOURCE_USAGE, SYSTEM_RESOURCE_USAGE, SYSTEM. All other values will be ignored
+sysTables: "ACTIVE_EVENTS, DISK_STORAGE, HOST_RESOURCES, IO_USAGE, NODE_STATES, QUERY_METRICS, RESOURCE_USAGE, SYSTEM_RESOURCE_USAGE, SYSTEM"
+~~~~
+
+###  monitor.xml
+~~~~
 <monitor>
         <name>VerticaMonitor</name>
         <type>managed</type>
