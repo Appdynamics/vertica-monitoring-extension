@@ -36,7 +36,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 1. Run 'mvn clean install' from the vertica-monitoring-extension directory
 2. Download the file VerticaMonitor.zip found in the 'target' directory into \<machineagent install dir\>/monitors/
 3. Unzip the downloaded file and cd into VerticaMonitor
-4. Open the monitor.xml file and provide values for host, port, database, user and password
+4. Open the config.yml file and provide values for host, port, database, user and password. You can also configure system table details for which you want to get the stats.
 5. Restart the Machine Agent.
 6. In the AppDynamics controller, look for events in Custom Metrics|Vertica|
 
@@ -54,7 +54,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 </tr>
 <tr>
 <td class='confluenceTd'> src/main/resources </td>
-<td class='confluenceTd'> Contains monitor.xml </td>
+<td class='confluenceTd'> Contains monitor.xml and config.yml </td>
 </tr>
 <tr>
 <td class='confluenceTd'> target </td>
@@ -69,7 +69,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 
 ##XML Examples
 
-###  monitor.xml
+###  config.yml
 
 
 | Param | Description |
@@ -79,6 +79,8 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 | database | Database name you want to connect to |
 | user | user name |
 | password | password |
+| metricPrefix | Metric prefix which is shown in the controller. Default is "Custom Metrics\|Vertica\|" |
+| sysTables | System table names for which metrics has to be collected |
 
 ~~~~
 <monitor>
@@ -95,12 +97,8 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
                 <type>java</type>
                 <execution-timeout-in-secs>60</execution-timeout-in-secs>
                 <task-arguments>
-                    <argument name="host" is-required="true" default-value="172.16.4.175" />
-                    <argument name="port" is-required="true" default-value="5433" />
-                    <argument name="database" is-required="true" default-value="vmartdb" />
-                    <argument name="user" is-required="false" default-value="dbadmin" />
-                    <argument name="password" is-required="false" default-value="admin" />
-		       </task-arguments>
+                    <argument name="config-file" is-required="true" default-value="monitors/VerticaMonitor/config.yml" />
+	       </task-arguments>
                 <java-task>
                     <classpath>vertica-monitoring-extension.jar</classpath>
                     <impl-class>com.appdynamics.monitors.vertica.VerticaMonitor</impl-class>
