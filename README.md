@@ -184,7 +184,7 @@ Monitors node recovery state-change history on the system
 
 | Name | Description |
 | ----- | ----- |
-| Custom Metrics/Vertica/Node State/{NODE_NAME}/node_state | Shows the node's state. Can be one of: UP, READY, UNSAFE, , SHUTDOWN, RECOVERING  |
+| Custom Metrics/Vertica/Node State/{NODE_NAME}/node_state | Shows the node's state. Can be one of: UP (0), READY (1), UNSAFE (2), SHUTDOWN (3), RECOVERING (4)  |
 
 ###Query Metrics
 Monitors the sessions and queries running on each node
