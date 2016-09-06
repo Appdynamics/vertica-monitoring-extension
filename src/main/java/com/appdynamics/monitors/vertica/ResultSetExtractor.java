@@ -2,6 +2,7 @@ package com.appdynamics.monitors.vertica;
 
 import com.appdynamics.monitors.vertica.converter.Converter;
 import com.appdynamics.monitors.vertica.stats.ColumnWithConverter;
+import com.google.common.base.Strings;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +39,10 @@ public class ResultSetExtractor {
                 for (ColumnWithConverter statColumn : statColumns) {
                     Converter<?> converter = statColumn.getConverter();
                     String columnName = statColumn.getColumnName();
-                    stats.put(metricPath + "|" + sb.toString() + columnName, converter.convert(resultSet.getString(columnName)));
+                    String value = resultSet.getString(columnName);
+                    if(!Strings.isNullOrEmpty(value)) {
+                        stats.put(metricPath + "|" + sb.toString() + columnName, converter.convert(value));
+                    }
                 }
             }
             return stats;

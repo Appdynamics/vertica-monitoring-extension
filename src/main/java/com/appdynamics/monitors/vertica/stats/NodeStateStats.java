@@ -16,6 +16,6 @@ public class NodeStateStats {
     }
 
     public enum NodeState {
-        UP, READY, UNSAFE, SHUTDOWN, RECOVERING
+        INITIALIZING, UP, READY, UNSAFE, SHUTDOWN, RECOVERING
     }
 }
