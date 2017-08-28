@@ -77,7 +77,7 @@ public class VerticaMonitor extends AManagedMonitor {
 
         if (Strings.isNullOrEmpty(host) || Strings.isNullOrEmpty(port) || Strings.isNullOrEmpty(database)) {
             LOG.error("Please specify required parameters in monitor.xml");
-            throw new TaskExecutionException("Please specify required parameters in monitor.xml");
+            throw new TaskExecutionException();
         }
 
         String user = config.getUser();
@@ -118,7 +118,7 @@ public class VerticaMonitor extends AManagedMonitor {
             }
         } catch (SQLException e) {
             LOG.error("Unable to close connection", e);
-            throw new TaskExecutionException("Unable to close connection", e);
+            throw new TaskExecutionException();
         }
     }
 
@@ -195,7 +195,7 @@ public class VerticaMonitor extends AManagedMonitor {
             Class.forName(VERTICA_JDBC_DRIVER);
         } catch (ClassNotFoundException e) {
             LOG.error("Unable to load driver class", e);
-            throw new TaskExecutionException("Unable to load driver class", e);
+            throw new TaskExecutionException();
         }
 
         Properties properties = new Properties();
@@ -213,7 +213,7 @@ public class VerticaMonitor extends AManagedMonitor {
             return conn;
         } catch (SQLException e) {
             LOG.error("Unable to create connection", e);
-            throw new TaskExecutionException("Unable to create connection", e);
+            throw new TaskExecutionException();
         }
     }
 
@@ -241,4 +241,14 @@ public class VerticaMonitor extends AManagedMonitor {
             }
         }
     }
+
+    public static void main (String[] args) throws TaskExecutionException {
+        VerticaMonitor verticaMonitor = new VerticaMonitor();
+
+        Map<String, String> argsMap = new HashMap<String, String>();
+        argsMap.put("config-file", "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension" +
+                "" + "" + "/src/main/resources/conf/config.yml");
+        verticaMonitor.execute(argsMap, null);
+    }
+
 }

@@ -48,7 +48,7 @@ public class ResultSetExtractor {
             return stats;
         } catch (SQLException e) {
             LOG.error("Error while getting stats from result set", e);
-            throw new TaskExecutionException("Error while getting stats from result set", e);
+            throw new TaskExecutionException();
         } finally {
             try {
                 resultSet.close();

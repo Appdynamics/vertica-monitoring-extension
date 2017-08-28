@@ -23,7 +23,7 @@ public class QueryExecutor {
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
             LOG.error("Error executing query", e);
-            throw new TaskExecutionException("Error executing query", e);
+            throw new TaskExecutionException();
         }
     }
 }

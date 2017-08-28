@@ -1,10 +1,9 @@
 # Vertica Instance
-host: "localhost"
+host: "192.168.57.102"
 port: 5433
-database: "vmartdb"
+database: "VMart"
 user: "dbadmin"
-password: "admin"
-
+password: "password"
 metricPrefix:  "Custom Metrics|Vertica|"
 
 #System tables for which stats has to be shown. Supported values are ACTIVE_EVENTS, DISK_STORAGE, HOST_RESOURCES, IO_USAGE,
