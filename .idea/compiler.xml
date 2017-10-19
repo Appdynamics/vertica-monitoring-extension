@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="sql-monitoring-extension" />
         <module name="vertica-monitoring-extension" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="sql-monitoring-extension" target="1.5" />
       <module name="vertica-monitoring-extension" target="1.5" />
     </bytecodeTargetLevel>
   </component>
