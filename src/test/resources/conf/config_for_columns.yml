@@ -1,9 +1,10 @@
 columns:
-  - name: "TRN_TARGET_OPERATION"
+  - name: "NODE_NAME"
     type: "metricPathName"
 
-  - name: "TRN_FACADE_DURATION"
+  - name: "AVERAGE_MEMORY_USAGE_PERCENT"
     type: "metricValue"
 
-  - name: "TRN_ROUTER_DURATION"
+  - name: "AVERAGE_CPU_USAGE_PERCENT"
     type: "metricValue"
+

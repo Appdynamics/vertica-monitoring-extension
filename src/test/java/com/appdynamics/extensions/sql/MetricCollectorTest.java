@@ -44,11 +44,20 @@ public class MetricCollectorTest {
         when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
 
 
-        int num1 = 6;
-        int num2 = 7;
-        when(resultSet.getString("TRN_TARGET_OPERATION")).thenReturn("metricPathName");
-        when(resultSet.getBigDecimal("TRN_FACADE_DURATION")).thenReturn(BigDecimal.valueOf(num1));
-        when(resultSet.getBigDecimal("TRN_ROUTER_DURATION")).thenReturn(BigDecimal.valueOf(num2));
+        String num1 = "6";
+        String num2 = "7";
+
+        BigDecimal value1 = BigDecimal.valueOf(6);
+        BigDecimal value2 = BigDecimal.valueOf(7);
+
+
+        when(resultSet.getString("NODE_NAME")).thenReturn("metricPathName");
+        when(resultSet.getString("AVERAGE_MEMORY_USAGE_PERCENT")).thenReturn(num1);
+        when(resultSet.getString("AVERAGE_CPU_USAGE_PERCENT")).thenReturn(num2);
+
+        when(resultSet.getBigDecimal("AVERAGE_MEMORY_USAGE_PERCENT")).thenReturn(value1);
+        when(resultSet.getBigDecimal("AVERAGE_CPU_USAGE_PERCENT")).thenReturn(value2);
+
 
         Map queries = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config_for_columns.yml"));
         ColumnGenerator columnGenerator = new ColumnGenerator();
@@ -58,14 +67,12 @@ public class MetricCollectorTest {
 
         Map<String , BigDecimal> resultFromAnswer = metricCollector.goThroughResultSet(resultSet,columns);
 
-        BigDecimal value1 = BigDecimal.valueOf(7);
-        BigDecimal value2 = BigDecimal.valueOf(6);
 
-        Assert.assertTrue(resultFromAnswer.containsKey("metricPrefix|dbServer|queryName|metricPathName|TRN_ROUTER_DURATION"));
-        Assert.assertTrue(value1 == resultFromAnswer.get("metricPrefix|dbServer|queryName|metricPathName|TRN_ROUTER_DURATION"));
+        Assert.assertTrue(resultFromAnswer.containsKey("metricPrefix|dbServer|queryName|metricPathName|AVERAGE_CPU_USAGE_PERCENT"));
+        Assert.assertTrue(value2 == resultFromAnswer.get("metricPrefix|dbServer|queryName|metricPathName|AVERAGE_CPU_USAGE_PERCENT"));
 
-        Assert.assertTrue(resultFromAnswer.containsKey("metricPrefix|dbServer|queryName|metricPathName|TRN_FACADE_DURATION"));
-        Assert.assertTrue(value2 == resultFromAnswer.get("metricPrefix|dbServer|queryName|metricPathName|TRN_FACADE_DURATION"));
+        Assert.assertTrue(resultFromAnswer.containsKey("metricPrefix|dbServer|queryName|metricPathName|AVERAGE_MEMORY_USAGE_PERCENT"));
+        Assert.assertTrue(value1 == resultFromAnswer.get("metricPrefix|dbServer|queryName|metricPathName|AVERAGE_MEMORY_USAGE_PERCENT"));
 
         Assert.assertTrue(resultFromAnswer.size() == 2);
     }
