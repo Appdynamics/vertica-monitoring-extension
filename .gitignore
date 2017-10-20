@@ -22,7 +22,6 @@ dist
 
 
 
-# Package Files #
 *.jar
 *.war
 *.ear
