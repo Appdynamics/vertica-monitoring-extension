@@ -1,0 +1,15 @@
+target
+*.iml
+.settings
+.classpath
+.project
+*.log
+*.ipr
+*.iws
+.idea
+.DS_Store
+dist
+/lib/
+/lib_7_0_1_2/
+/lib_8_0_0_4/
+/lib_7/
