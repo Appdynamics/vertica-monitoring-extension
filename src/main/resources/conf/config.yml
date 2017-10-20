@@ -1,7 +1,7 @@
 
 dbServers:
     - displayName: "Vertica"
-      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart;"
+#      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart;"
 
       driver: "com.vertica.jdbc.Driver"
       host: "192.168.57.102"
@@ -300,7 +300,7 @@ numberOfThreads: 5
 
 # Make sure the metric prefix ends with a |
 #This will create this metric in all the tiers, under this path.
-#metricPrefix: "Custom Metrics|SQL|"
+#metricPrefix: "Custom Metrics|Vertica|"
 #This will create it in specific Tier. Replace <ComponentID> with TierID
-#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
-metricPrefix: "Custom Metrics|AVertica|Test5"
+#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Vertica|"
+metricPrefix: "Custom Metrics|Vertica|"

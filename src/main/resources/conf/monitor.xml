@@ -17,7 +17,6 @@
             <argument name="config-file" is-required="true" default-value="monitors/Vertica-Monitor/config.yml"     />
         </task-arguments>
         <java-task>
-            <!--<classpath>frb-sql-monitoring-extension.jar;mssql-jdbc-6.2.1.jre7.jar</classpath>-->
             <classpath>vertica-monitoring-extension.jar;vertica-jdbc-7.0.1-0.jar</classpath>
 
             <impl-class>com.appdynamics.extensions.sql.SQLMonitor</impl-class>
