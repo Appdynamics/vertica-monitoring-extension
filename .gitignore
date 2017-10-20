@@ -1,4 +1,4 @@
-target
+/target
 *.iml
 .settings
 .classpath
@@ -9,7 +9,22 @@ target
 .idea
 .DS_Store
 dist
-lib
+/.gitignorelib
 /lib_7_0_1_2/
 /lib_8_0_0_4/
 /lib_7/
+/lib
+
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+
+
+target
+build
+lib
