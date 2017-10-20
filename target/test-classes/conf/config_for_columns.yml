@@ -1,0 +1,9 @@
+columns:
+  - name: "TRN_TARGET_OPERATION"
+    type: "metricPathName"
+
+  - name: "TRN_FACADE_DURATION"
+    type: "metricValue"
+
+  - name: "TRN_ROUTER_DURATION"
+    type: "metricValue"

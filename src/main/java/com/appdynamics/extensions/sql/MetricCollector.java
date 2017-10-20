@@ -53,7 +53,7 @@ public class MetricCollector {
                 else if(c.getType().equals("metricValue")){
 //                    System.out.println("\n Column name: " +c.getName() + "");
                     String metricName1 = metricName +  METRIC_SEPARATOR + c.getName() ;
-                    System.out.println("MetricValue: "+ metricName1 + "  Result : " +resultSet.getBigDecimal(c.getName()).toString());
+//                    System.out.println("MetricValue: "+ metricName1 + "  Result : " +resultSet.getBigDecimal(c.getName()).toString());
                     String val = resultSet.getString(c.getName());
 
 
@@ -111,7 +111,7 @@ public class MetricCollector {
                 return st.ordinal();
             }
         }
-        return 6;
+        return 7;
     }
 
 
