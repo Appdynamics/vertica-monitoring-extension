@@ -1,6 +1,6 @@
 package com.appdynamics.extensions.sql;
 
-import com.appdynamics.extensions.metrics.Metric;
+//import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.extensions.util.MetricWriteHelper;
 import com.appdynamics.extensions.util.YmlUtils;
@@ -33,7 +33,7 @@ public class SQLMonitorTask implements Runnable{
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
     public void run(){
-        Metric metric = new Metric();
+//        Metric metric = new Metric();
         MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
         Connection connection = null;
         List<Map> queries = (List<Map>) server.get("queries");
