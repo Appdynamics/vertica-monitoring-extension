@@ -1,5 +1,6 @@
 package com.appdynamics.extensions.sql;
 
+import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.extensions.util.MetricWriteHelper;
 import com.appdynamics.extensions.util.YmlUtils;
@@ -32,25 +33,33 @@ public class SQLMonitorTask implements Runnable{
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
     public void run(){
+        Metric metric = new Metric();
         MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
-
-        List<Map> queries = (List<Map>) server.get("queries");
         Connection connection = null;
+        List<Map> queries = (List<Map>) server.get("queries");
         if (queries != null && !queries.isEmpty()) {
 
             try{
+                 connection = getConnection();
+
                 for(Map query: queries){
-                    connection = getConnection(connection);
+                    //#TODO refactor
                     Map<String , BigDecimal> values = executeQuery(connection, query);
                     printData(values, metricPrinter);
-                    closeCurrentConnection(connection);
+
                 }
+
+                closeCurrentConnection(connection);
+
             } catch(SQLException e){
                 logger.error("Unable to open the jdbc connection",e);
             } catch (ClassNotFoundException e) {
                 logger.error("Unable to load the driver ",e);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+
+
             }
         }
 
@@ -62,29 +71,9 @@ public class SQLMonitorTask implements Runnable{
             metricPrinter.reportMetric(key,values.get(key));
         }
     }
-//    public void run2() {
-//
-//        List<Map> queries = (List<Map>) server.get("queries");
-//
-//        Connection connection = null;
-//        if (queries != null && !queries.isEmpty()) {
-//
-//            try{
-//                for(Map query: queries){
-//                    connection = getConnection(connection);
-//                    executeQuery(connection, query);
-//                }
-//            } catch(SQLException e){
-//                logger.error("Unable to open the jdbc connection",e);
-//            } catch (ClassNotFoundException e) {
-//                logger.error("Unable to load the driver ",e);
-//            }
-//        }
-//
-//        }
 
 
-        private Map<String , BigDecimal>  executeQuery(Connection connection, Map query) throws SQLException {
+    private Map<String , BigDecimal>  executeQuery(Connection connection, Map query) throws SQLException {
 
             String dbServerDisplayName = (String) server.get("displayName");
             String queryDisplayName = (String)query.get("displayName");
@@ -98,21 +87,26 @@ public class SQLMonitorTask implements Runnable{
 
             MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName);
             Map<String , BigDecimal> values = metricCollector.goThroughResultSet(resultSet,columns);
+
+            resultSet.close();
+
             return values;
         }
 
 
 
-        private ResultSet getResultSet(Connection connection, Map query) throws SQLException {
+    private ResultSet getResultSet(Connection connection, Map query) throws SQLException {
             String statement = (String) query.get("queryStmt");
             statement = substitute(statement);
             ResultSet resultSet = jdbcAdapter.queryDatabase(connection, statement);
             return resultSet;
         }
 
-        private Connection getConnection(Connection connection) throws SQLException, ClassNotFoundException {
+    private Connection getConnection() throws SQLException, ClassNotFoundException {
 
-            connection = jdbcAdapter.open((String)server.get("driver"));
+//            connection = jdbcAdapter.open((String)server.get("driver"),Map connectionProps);
+
+            Connection connection = jdbcAdapter.open((String)server.get("driver"));
             return connection;
         }
 

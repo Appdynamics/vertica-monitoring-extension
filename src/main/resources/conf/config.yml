@@ -1,7 +1,7 @@
 
 dbServers:
     - displayName: "Vertica"
-#      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart;"
+      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart;"
 
       driver: "com.vertica.jdbc.Driver"
       host: "192.168.57.102"
@@ -14,7 +14,7 @@ dbServers:
       #encryptedPassword: ""
 
       queries:
-        - displayName: "Active Events"
+        - displayName: "Active1"
           queryStmt: "Select NODE_NAME, EVENT_CODE, EVENT_ID, EVENT_POSTED_COUNT from Active_events"
           columns:
             - name: "NODE_NAME"
@@ -29,7 +29,7 @@ dbServers:
             - name: "EVENT_POSTED_COUNT"
               type: "metricValue"
 
-        - displayName: "Disk Storage"
+        - displayName: "DiskStorage1"
           queryStmt: "Select NODE_NAME, STORAGE_USAGE, RANK, THROUGHPUT, LATENCY, DISK_BLOCK_SIZE_BYTES, DISK_SPACE_USED_BLOCKS, DISK_SPACE_USED_MB, DISK_SPACE_FREE_BLOCKS, DISK_SPACE_FREE_MB, DISK_SPACE_FREE_PERCENT from DISK_STORAGE"
           columns:
             - name: "NODE_NAME"
@@ -65,7 +65,7 @@ dbServers:
             - name: "DISK_SPACE_FREE_PERCENT"
               type: "metricValue"
 
-        - displayName: "Host Resources"
+        - displayName: "HostResources1"
           queryStmt: "Select HOST_NAME, OPEN_FILES_LIMIT, THREADS_LIMIT, CORE_FILE_LIMIT_MAX_SIZE_BYTES, PROCESSOR_COUNT, OPENED_FILE_COUNT, OPENED_SOCKET_COUNT, OPENED_NONFILE_NONSOCKET_COUNT, TOTAL_MEMORY_BYTES, TOTAL_MEMORY_FREE_BYTES,  TOTAL_BUFFER_MEMORY_BYTES, TOTAL_MEMORY_CACHE_BYTES, TOTAL_SWAP_MEMORY_BYTES, TOTAL_SWAP_MEMORY_FREE_BYTES, DISK_SPACE_FREE_MB, DISK_SPACE_USED_MB, DISK_SPACE_TOTAL_MB from HOST_RESOURCES"
           columns:
             - name: "HOST_NAME"
@@ -119,8 +119,7 @@ dbServers:
             - name: "DISK_SPACE_TOTAL_MB"
               type: "metricValue"
 
-
-        - displayName: "IO Usage"
+        - displayName: "IO_USAGE"
           queryStmt: "Select NODE_NAME, READ_KBYTES_PER_SEC, WRITTEN_KBYTES_PER_SEC from IO_USAGE"
           columns:
             - name: "NODE_NAME"
@@ -132,7 +131,7 @@ dbServers:
             - name: "WRITTEN_KBYTES_PER_SEC"
               type: "metricValue"
 
-        - displayName: "Node Status"
+        - displayName: "NODE_STATUS"
           queryStmt: "Select NODE_NAME, NODE_STATE from NODE_STATES"
           columns:
             - name: "NODE_NAME"
@@ -141,9 +140,19 @@ dbServers:
             - name: "NODE_STATE"
               type: "metricValue"
 
-        - displayName: "Query Metrics"
-          queryStmt: "Select NODE_NAME, ACTIVE_USER_SESSION_COUNT, ACTIVE_SYSTEM_SESSION_COUNT, TOTAL_USER_SESSION_COUNT, TOTAL_SYSTEM_SESSION_COUNT, TOTAL_ACTIVE_SESSION_COUNT, TOTAL_SESSION_COUNT, RUNNING_QUERY_COUNT, EXECUTED_QUERY_COUNT  from QUERY_METRICS "
+#
+#  NODE STATUS :
+# INITIALIZING : 0
+#           UP : 1
+#         DOWN : 2
+#        READY : 3
+#       UNSAFE : 4
+#     SHUTDOWN : 5
+#   RECOVERING : 6
+#         NULL : 7
 
+        - displayName: "QUERY_METRICS"
+          queryStmt: "Select NODE_NAME, ACTIVE_USER_SESSION_COUNT, ACTIVE_SYSTEM_SESSION_COUNT, TOTAL_USER_SESSION_COUNT, TOTAL_SYSTEM_SESSION_COUNT, TOTAL_ACTIVE_SESSION_COUNT, TOTAL_SESSION_COUNT, RUNNING_QUERY_COUNT, EXECUTED_QUERY_COUNT  from QUERY_METRICS "
           columns:
             - name: "NODE_NAME"
               type: "metricPathName"
@@ -172,8 +181,7 @@ dbServers:
             - name: "EXECUTED_QUERY_COUNT"
               type: "metricValue"
 
-
-        - displayName: "Resource Usage"
+        - displayName: "RESOURCE_USAGE"
           queryStmt: "SELECT NODE_NAME, REQUEST_COUNT, LOCAL_REQUEST_COUNT, ACTIVE_THREAD_COUNT, OPEN_FILE_HANDLE_COUNT, MEMORY_REQUESTED_KB, ADDRESS_SPACE_REQUESTED_KB, WOS_USED_BYTES, WOS_ROW_COUNT, ROS_USED_BYTES, ROS_ROW_COUNT, TOTAL_ROW_COUNT, TOTAL_USED_BYTES, TOKENS_USED FROM RESOURCE_USAGE "
           columns:
             - name: "NODE_NAME"
@@ -218,8 +226,7 @@ dbServers:
             - name: "TOKENS_USED"
               type: "metricValue"
 
-
-        - displayName: "System Resource Usage"
+        - displayName: "System_Resource_Usage"
           queryStmt: "SELECT NODE_NAME, AVERAGE_MEMORY_USAGE_PERCENT, AVERAGE_CPU_USAGE_PERCENT, NET_RX_KBYTES_PER_SECOND, NET_TX_KBYTES_PER_SECOND, IO_READ_KBYTES_PER_SECOND, IO_WRITTEN_KBYTES_PER_SECOND FROM SYSTEM_RESOURCE_USAGE"
           columns:
             - name: "NODE_NAME"
@@ -300,7 +307,7 @@ numberOfThreads: 5
 
 # Make sure the metric prefix ends with a |
 #This will create this metric in all the tiers, under this path.
-#metricPrefix: "Custom Metrics|Vertica|"
+#metricPrefix: "Custom Metrics|SQL|"
 #This will create it in specific Tier. Replace <ComponentID> with TierID
-#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Vertica|"
-metricPrefix: "Custom Metrics|Vertica|"
+#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
+metricPrefix: "Custom Metrics|Vertica|Test1"

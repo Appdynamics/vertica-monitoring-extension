@@ -14,15 +14,13 @@ import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+
 import static com.appdynamics.TaskInputArgs.PASSWORD_ENCRYPTED;
 
 public class SQLMonitor extends AManagedMonitor {
@@ -110,21 +108,21 @@ public class SQLMonitor extends AManagedMonitor {
 
     private String createConnectionUrl (Map server){
 
-        String url = "jdbc:vertica://" + Util.convertToString(server.get("host"),"");
-        url += ":" + Util.convertToString(server.get("port"),"");
-        url += "/" + Util.convertToString(server.get("database"),"");
+//        String url = "jdbc:vertica://" + Util.convertToString(server.get("host"),"");
+//        url += ":" + Util.convertToString(server.get("port"),"");
+//        url += "/" + Util.convertToString(server.get("database"),"");
+        String url = Util.convertToString(server.get("connectionUrl"),"");
+
         return url;
     }
-    private String getPassword(Map server){
 
-//        String user = Util.convertToString(server.get("user"),"");
-//
-//        properties.put("ReadOnly", "true");
-//        if (!Strings.isNullOrEmpty(user)) {
-//            properties.put("user", user);
-//        }
 
-        String normal_password = Util.convertToString(server.get("password"),"");
+
+    private String getPassword(Map server, String normal_password){
+
+
+
+//        String normal_password = Util.convertToString(server.get("password"),"");
         String encryptionPassword = Util.convertToString(server.get("encryptedPassword"),"");
         String encryptionKey = Util.convertToString(server.get("encryptionKey"),"");
         String password;
@@ -134,10 +132,6 @@ public class SQLMonitor extends AManagedMonitor {
         else{
             password = normal_password;
         }
-
-//            if (!Strings.isNullOrEmpty(password)) {
-//            properties.put("password", password);
-//        }
 
         return password;
 
@@ -153,12 +147,16 @@ public class SQLMonitor extends AManagedMonitor {
 //            String password = getPassword(encryptionKey,encryptionPassword);
 //            connUrl = connUrl.concat(";password="+password);
 //        }
+        Map<String, String> connectionProperties = getConnectionProperties(server);
 
-        String user = Util.convertToString(server.get("user"),"");
-        String password = getPassword(server);
 
+
+        //#TODO check if MA classloader is needed
         Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
-        JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, user, password);
+
+        JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
+
+//        JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, user, password);
         return new SQLMonitorTask.Builder()
                 .metricWriter(configuration.getMetricWriter())
                 .metricPrefix(configuration.getMetricPrefix())
@@ -167,6 +165,27 @@ public class SQLMonitor extends AManagedMonitor {
                 .currentTimestamp(currentTimestamp)
                 .server(server).build();
 
+    }
+
+    private Map<String, String > getConnectionProperties(Map server){
+        Map<String, String > connectionProperties = new LinkedHashMap<String, String>();
+//        connectionProperties = (Map<String, ArrayList<LinkedHashMap<String, String >>>)server.get("connectionProperties");
+        ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>)server.get("connectionProperties");
+
+        for(LinkedHashMap linkedHashMap : arrayList){
+            for(Object key: linkedHashMap.keySet()){
+                if(key == "password") {
+                    String password = getPassword(server,(String)linkedHashMap.get(key));
+                    connectionProperties.put((String)key, password);
+                }
+                else{
+                    connectionProperties.put((String)key, (String)linkedHashMap.get(key));
+                }
+
+            }
+        }
+
+        return connectionProperties;
     }
 
     private String getEncryptedPassword(String encryptionKey,String encryptedPassword) {
@@ -182,7 +201,7 @@ public class SQLMonitor extends AManagedMonitor {
         final Map<String, String> taskArgs = new HashMap<String, String>();
 //        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config.yml");
 
-        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_vertica.yml");
+        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
 
 //        monitor.execute(taskArgs, null);
 

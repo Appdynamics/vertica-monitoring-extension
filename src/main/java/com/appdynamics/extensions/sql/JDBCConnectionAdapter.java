@@ -2,6 +2,7 @@ package com.appdynamics.extensions.sql;
 
 
 import java.sql.*;
+import java.util.Map;
 import java.util.Properties;
 import java.util.PropertyPermission;
 import com.google.common.base.Strings;
@@ -10,20 +11,18 @@ import com.google.common.base.Strings;
 public class JDBCConnectionAdapter {
 
     private final String connUrl;
-    private final String user;
-    private final String password;
+    private final Map<String, String> connectionProperties;
 
 
 
-    private JDBCConnectionAdapter(String connStr,String user, String password ){
+    private JDBCConnectionAdapter(String connStr, Map<String, String> connectionProperties){
         this.connUrl = connStr;
-        this.user = user;
-        this.password = password;
+        this.connectionProperties = connectionProperties;
 
     }
 
-    static JDBCConnectionAdapter create(String connUrl, String user, String password){
-        return new JDBCConnectionAdapter(connUrl, user, password);
+    static JDBCConnectionAdapter create(String connUrl,  Map<String, String> connectionProperties){
+        return new JDBCConnectionAdapter(connUrl, connectionProperties);
     }
 
     Connection open(String driver) throws SQLException, ClassNotFoundException {
@@ -33,12 +32,13 @@ public class JDBCConnectionAdapter {
 
         Properties properties = new Properties();
         properties.put("ReadOnly", "true");
-        if (!Strings.isNullOrEmpty(user)) {
-            properties.put("user", user);
+
+        for(String key: connectionProperties.keySet())
+        {
+            if(!Strings.isNullOrEmpty(connectionProperties.get(key)))
+                properties.put(key, connectionProperties.get(key));
         }
-        if (!Strings.isNullOrEmpty(password)) {
-            properties.put("password", password);
-        }
+
 
         connection = DriverManager.getConnection(connUrl,properties);
         return connection;
