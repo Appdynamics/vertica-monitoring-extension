@@ -1,116 +1,77 @@
 package com.appdynamics.extensions.sql;
 
-
-import com.appdynamics.TaskInputArgs;
+import com.appdynamics.extensions.ABaseMonitor;
+import com.appdynamics.extensions.AMonitorRunContext;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.TaskInputArgs;
+
 import com.appdynamics.extensions.crypto.CryptoUtil;
-import com.appdynamics.extensions.util.MetricWriteHelper;
-import com.appdynamics.extensions.util.MetricWriteHelperFactory;
+import com.appdynamics.extensions.util.AssertUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
-import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
-import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import java.io.IOException;
+import static com.appdynamics.extensions.sql.utils.Constants.DEFAULT_METRIC_PREFIX;
+import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
 
-import static com.appdynamics.TaskInputArgs.PASSWORD_ENCRYPTED;
 
-public class SQLMonitor extends AManagedMonitor {
+public class SQLMonitor extends ABaseMonitor{
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitor.class);
-    private boolean initialized = false;
-    private static final String CONFIG_ARG = "config-file";
-    private static final String METRIC_PREFIX = "Custom Metrics|Tibco ASG|";
-    private MonitorConfiguration configuration;
+    private static final Logger logger = LoggerFactory.getLogger(SQLMonitor.class);
     private long previousTimestamp,currentTimestamp;
+    private static final String CONFIG_ARG = "config-file";
 
-    public SQLMonitor() {
-        System.out.println(logVersion());
+    @Override
+    protected String getDefaultMetricPrefix() {
+        return DEFAULT_METRIC_PREFIX;
     }
 
-    private void initialize(Map<String, String> taskArgs) {
-        if(!initialized){
-            //read the config.
-            final String configFilePath = taskArgs.get(CONFIG_ARG);
-            MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
-            MonitorConfiguration conf = new MonitorConfiguration(METRIC_PREFIX, new TaskRunnable(), metricWriteHelper);
-            conf.setConfigYml(configFilePath);
-            conf.checkIfInitialized(MonitorConfiguration.ConfItem.CONFIG_YML, MonitorConfiguration.ConfItem.EXECUTOR_SERVICE,
-                    MonitorConfiguration.ConfItem.METRIC_PREFIX,MonitorConfiguration.ConfItem.METRIC_WRITE_HELPER);
-            this.configuration = conf;
-            initialized = true;
-            previousTimestamp = 0;
-        }
+    @Override
+    public String getMonitorName() {
+        return "Vertica Monitor";
     }
 
-    private String logVersion() {
-        String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
-        logger.info(msg);
-        return msg;
-    }
+    @Override
+    protected void doRun(AMonitorRunContext taskExecutor) {
+        List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
+//        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
 
-    private static String getImplementationVersion() {
-        return SQLMonitor.class.getPackage().getImplementationTitle();
-    }
+        for (Map<String, String> server : servers) {
 
-    public TaskOutput execute(Map<String, String> taskArgs, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        logVersion();
-        if(!initialized){
-            initialize(taskArgs);
-        }
-        logger.debug("The raw arguments are {}", taskArgs);
-        previousTimestamp = currentTimestamp;
-        currentTimestamp = System.currentTimeMillis();
-        if(previousTimestamp != 0) {
-            configuration.executeTask();
-        }
-
-        logger.info("SQLMonitor monitor run completed successfully.");
-        return new TaskOutput("SQLMonitor monitor run completed successfully.");
-    }
-
-    private class TaskRunnable implements Runnable {
-        public void run() {
-            Map<String, ?> config = configuration.getConfigYml();
-            if (config != null) {
-                List<Map> servers = (List<Map>) config.get("dbServers");
-                if (servers != null && !servers.isEmpty()) {
-                    for (Map server : servers) {
-                        try {
-                            SQLMonitorTask task = createTask(server);
-                            configuration.getExecutorService().execute(task);
-                            /*try {
-                                Thread.sleep(100000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }*/
-                        } catch (IOException e) {
-                            logger.error("Cannot construct JMX uri for {}", Util.convertToString(server.get("displayName"),""));
-                        }
-
-                    }
-                } else {
-                    logger.error("There are no servers configured");
+            try {
+                SQLMonitorTask task = createTask(server, taskExecutor);
+                taskExecutor.submit(server.get("displayName"),task);
                 }
-            } else {
-                logger.error("The config.yml is not loaded due to previous errors.The task will not run");
-            }
+
+        catch (IOException  e){
+            logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"),""));
+
+        }
         }
     }
+
+    @Override
+    protected int getTaskCount() {
+        List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
+//        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
+        return servers.size();
+    }
+
+
+
+    // Adding Vertica Functions
 
     private String createConnectionUrl (Map server){
 
-//        String url = "jdbc:vertica://" + Util.convertToString(server.get("host"),"");
-//        url += ":" + Util.convertToString(server.get("port"),"");
-//        url += "/" + Util.convertToString(server.get("database"),"");
         String url = Util.convertToString(server.get("connectionUrl"),"");
 
         return url;
@@ -120,14 +81,11 @@ public class SQLMonitor extends AManagedMonitor {
 
     private String getPassword(Map server, String normal_password){
 
-
-
-//        String normal_password = Util.convertToString(server.get("password"),"");
         String encryptionPassword = Util.convertToString(server.get("encryptedPassword"),"");
         String encryptionKey = Util.convertToString(server.get("encryptionKey"),"");
         String password;
         if(!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)){
-             password = getEncryptedPassword(encryptionKey,encryptionPassword);
+            password = getEncryptedPassword(encryptionKey,encryptionPassword);
         }
         else{
             password = normal_password;
@@ -137,16 +95,8 @@ public class SQLMonitor extends AManagedMonitor {
 
     }
 
-    private SQLMonitorTask createTask(Map server) throws IOException {
+    private SQLMonitorTask createTask(Map server, AMonitorRunContext taskExecutor) throws IOException {
         String connUrl = createConnectionUrl(server);
-//        Properties properties = getProperties(server);
-
-//        String encryptionPassword = Util.convertToString(server.get("encryptedPassword"),"");
-//        String encryptionKey = Util.convertToString(server.get("encryptionKey"),"");
-//        if(!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)){
-//            String password = getPassword(encryptionKey,encryptionPassword);
-//            connUrl = connUrl.concat(";password="+password);
-//        }
         Map<String, String> connectionProperties = getConnectionProperties(server);
 
 
@@ -158,7 +108,7 @@ public class SQLMonitor extends AManagedMonitor {
 
 //        JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, user, password);
         return new SQLMonitorTask.Builder()
-                .metricWriter(configuration.getMetricWriter())
+                .metricWriter(taskExecutor.getMetricWriteHelper())
                 .metricPrefix(configuration.getMetricPrefix())
                 .jdbcAdapter(jdbcAdapter)
                 .previousTimestamp(previousTimestamp)
@@ -195,7 +145,10 @@ public class SQLMonitor extends AManagedMonitor {
         return CryptoUtil.getPassword(cryptoMap);
     }
 
-    public static void main(String[] args) throws  TaskExecutionException{
+
+    // End of Vertica Functions
+
+    public static void main(String[] args) throws TaskExecutionException {
 
         final SQLMonitor monitor = new SQLMonitor();
         final Map<String, String> taskArgs = new HashMap<String, String>();
@@ -221,4 +174,9 @@ public class SQLMonitor extends AManagedMonitor {
         }, 2, 10, TimeUnit.SECONDS);
     }
 
+
 }
+
+//        //#TODO check if MA classloader is needed
+//        Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
+//

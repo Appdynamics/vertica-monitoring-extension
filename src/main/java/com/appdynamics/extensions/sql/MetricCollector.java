@@ -105,6 +105,7 @@ public class MetricCollector {
     public enum NodeState {
         INITIALIZING, UP, DOWN, READY, UNSAFE, SHUTDOWN, RECOVERING
     }
+
     public int getNodeStatusValue(String name){
         for (NodeState st : NodeState.values()) {
             if (st.toString().equals(name)){

@@ -1,6 +1,6 @@
 package com.appdynamics.extensions.sql;
 
-import com.appdynamics.extensions.util.MetricWriteHelper;
+import com.appdynamics.extensions.MetricWriteHelper;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import org.slf4j.LoggerFactory;
 

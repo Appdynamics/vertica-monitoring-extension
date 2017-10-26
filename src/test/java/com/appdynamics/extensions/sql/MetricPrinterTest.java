@@ -1,6 +1,6 @@
 package com.appdynamics.extensions.sql;
 
-import com.appdynamics.extensions.util.MetricWriteHelper;
+import com.appdynamics.extensions.MetricWriteHelper;
 import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
