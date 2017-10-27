@@ -1,4 +1,4 @@
-package com.appdynamics.extensions.sql;
+package com.appdynamics.extensions.sql.utils;
 
 /**
  * Created by bhuvnesh.kumar on 10/24/17.

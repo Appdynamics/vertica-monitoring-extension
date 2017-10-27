@@ -25,16 +25,16 @@ public class MetricPrinterTest {
     private String displayName = "FRB-Try";
 
 
-
-    @Test
-    public void reportNodeMetricsTest () {
-        MetricPrinter metricPrinter = new MetricPrinter( metricWriter);
-
-        String metricName = "MetricName";
-        BigDecimal value = BigDecimal.valueOf(89);
-        metricPrinter.reportMetric(metricName, value);
-//        verify(metricPrinter, times(1)).reportMetric(metricName, value);
-    }
+//
+//    @Test
+//    public void reportNodeMetricsTest () {
+//        MetricPrinter metricPrinter = new MetricPrinter( metricWriter);
+//
+//        String metricName = "MetricName";
+//        BigDecimal value = BigDecimal.valueOf(89);
+//        metricPrinter.reportMetric(metricName, value);
+////        verify(metricPrinter, times(1)).reportMetric(metricName, value);
+//    }
 
 
 }

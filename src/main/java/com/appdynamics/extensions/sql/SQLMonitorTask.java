@@ -1,5 +1,6 @@
 package com.appdynamics.extensions.sql;
 
+import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.util.YmlUtils;
@@ -41,8 +42,9 @@ public class SQLMonitorTask implements Runnable{
             try{
                 for(Map query: queries){
                     connection = getConnection(connection);
-                    Map<String , BigDecimal> values = executeQuery(connection, query);
-                    printData(values, metricPrinter);
+                    executeQuery(connection,query);
+//                    Map<String , BigDecimal> values = executeQuery(connection, query);
+//                    printData(values, metricPrinter);
                     closeCurrentConnection(connection);
                 }
             } catch(SQLException e){
@@ -56,12 +58,12 @@ public class SQLMonitorTask implements Runnable{
 
     }
 
-    private void printData( Map<String , BigDecimal> values, MetricPrinter metricPrinter){
-
-        for (String key : values.keySet()) {
-            metricPrinter.reportMetric(key,values.get(key));
-        }
-    }
+//    private void printData( Map<String , BigDecimal> values, MetricPrinter metricPrinter){
+//
+//        for (String key : values.keySet()) {
+//            metricPrinter.reportMetric(key,values.get(key));
+//        }
+//    }
 //    public void run2() {
 //
 //        List<Map> queries = (List<Map>) server.get("queries");
@@ -84,7 +86,7 @@ public class SQLMonitorTask implements Runnable{
 //        }
 
 
-    private Map<String , BigDecimal>  executeQuery(Connection connection, Map query) throws SQLException {
+    private void  executeQuery(Connection connection, Map query) throws SQLException {
 
         String dbServerDisplayName = (String) server.get("displayName");
         String queryDisplayName = (String)query.get("displayName");
@@ -97,8 +99,13 @@ public class SQLMonitorTask implements Runnable{
 //            List<Column> columns = getColumns(query);
 
         MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName);
-        Map<String , BigDecimal> values = metricCollector.goThroughResultSet(resultSet,columns);
-        return values;
+
+        List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet,columns);
+        metricWriter.transformAndPrintMetrics(metricList);
+
+
+//        Map<String , BigDecimal> values = metricCollector.goThroughResultSet(resultSet,columns);
+//        return values;
     }
 
 
