@@ -45,11 +45,6 @@ public class SQLMonitor extends ABaseMonitor{
     protected void doRun(AMonitorRunContext taskExecutor) {
         List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
 
-        //        metricCharacterReplacers();
-        //        MetricReplacerList metricReplacerList = new MetricReplacerList();
-
-        //        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
-        //        List<MetricCharacterReplacer> metricCharacterReplacers = metricReplacerList.getMetricCharacterReplacer();
         for (Map<String, String> server : servers) {
 
             try {
@@ -67,35 +62,9 @@ public class SQLMonitor extends ABaseMonitor{
     @Override
     protected int getTaskCount() {
         List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
-//        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
         return servers.size();
     }
 
-//    private void metricCharacterReplacers(){
-//
-////        MetricReplacerList metricReplacerList = new MetricReplacerList();
-//
-////        List<Map<String,String>> metricReplace = (List<Map<String,String>>)configuration.getConfigYml().get("metricCharacterReplacer");
-////
-////         for(MetricCharacterReplacer replaceMap : metricReplace){
-////             MetricCharacterReplacer metricCharacterReplacer = new MetricCharacterReplacer();
-////             String key = (String)replaceMap.get("replace");
-////             String value = (String)replaceMap.get("replaceWith");
-////
-////             metricCharacterReplacer.setReplace(key);
-////             metricCharacterReplacer.setReplaceWith(value);
-////         }
-//int a;
-//
-//    }
-
-    // Adding Vertica Functions
-
-//    private List<MetricCharacterReplacer> getMetricReplacer(){
-//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)configuration.getConfigYml().get("metricCharacterReplacer");
-//        return metricReplace;
-//
-//    }
 
     private String createConnectionUrl (Map server){
 
@@ -125,15 +94,12 @@ public class SQLMonitor extends ABaseMonitor{
     private SQLMonitorTask createTask(Map server, AMonitorRunContext taskExecutor) throws IOException {
         String connUrl = createConnectionUrl(server);
         Map<String, String> connectionProperties = getConnectionProperties(server);
-//        List<MetricCharacterReplacer> metricReplace = getMetricReplacer();
-
 
         //#TODO check if MA classloader is needed
         Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
 
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
-//        JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, user, password);
         return new SQLMonitorTask.Builder()
                 .metricWriter(taskExecutor.getMetricWriteHelper())
                 .metricPrefix(configuration.getMetricPrefix())
@@ -146,7 +112,6 @@ public class SQLMonitor extends ABaseMonitor{
 
     private Map<String, String > getConnectionProperties(Map server){
         Map<String, String > connectionProperties = new LinkedHashMap<String, String>();
-//        connectionProperties = (Map<String, ArrayList<LinkedHashMap<String, String >>>)server.get("connectionProperties");
         ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>)server.get("connectionProperties");
 
         for(LinkedHashMap linkedHashMap : arrayList){
@@ -182,12 +147,6 @@ public class SQLMonitor extends ABaseMonitor{
 //        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config.yml");
 
         taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
-
-//        monitor.execute(taskArgs, null);
-
-
-        //monitor.execute(taskArgs, null);
-
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {

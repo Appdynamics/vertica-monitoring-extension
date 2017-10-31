@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import com.appdynamics.extensions.sql.utils.MetricCharacterReplacer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -30,13 +29,12 @@ public class SQLMonitorTask implements Runnable{
     private MetricWriteHelper metricWriter;
     private JDBCConnectionAdapter jdbcAdapter;
     private Map server;
-    private List metricReplacer;
 
     private final Yaml yaml = new Yaml();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
     public void run(){
-        MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
+//        MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
 
         List<Map> queries = (List<Map>) server.get("queries");
         Connection connection = null;
@@ -46,11 +44,6 @@ public class SQLMonitorTask implements Runnable{
                 for(Map query: queries){
                     connection = getConnection(connection);
                     executeQuery(connection,query);
-
-//                    Map<String , BigDecimal> values = executeQuery(connection, query);
-//                    printData(values, metricPrinter);
-
-
                     closeCurrentConnection(connection);
                 }
             } catch(SQLException e){
@@ -64,12 +57,6 @@ public class SQLMonitorTask implements Runnable{
 
     }
 
-//    private void printData( Map<String , BigDecimal> values, MetricPrinter metricPrinter){
-//
-//        for (String key : values.keySet()) {
-//            metricPrinter.reportMetric(key,values.get(key));
-//        }
-//    }
 
 
     private void  executeQuery(Connection connection, Map query) throws SQLException {
@@ -82,17 +69,12 @@ public class SQLMonitorTask implements Runnable{
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(query);
         List<Map<String,String>> metricReplacer = getMetricReplacer();
-//        List<MetricCharacterReplacer> metricReplacer = getMetricReplacer();
-//            List<Column> columns = getColumns(query);
 
         MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
 
         List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet,columns);
         metricWriter.transformAndPrintMetrics(metricList);
 
-
-//        Map<String , BigDecimal> values = metricCollector.goThroughResultSet(resultSet,columns);
-//        return values;
     }
 
 
@@ -104,15 +86,7 @@ public class SQLMonitorTask implements Runnable{
         return resultSet;
     }
 
-//    private List<MetricCharacterReplacer> getMetricReplacer(){
-//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)server.get("metricCharacterReplacer");
-//        List<Map<String,String>> metrics = (List<Map<String,String>>) server.get("metricCharacterReplacer");
-//        return metricReplace;
-//
-//    }
-
     private List<Map<String,String>> getMetricReplacer(){
-//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)server.get("metricCharacterReplacer");
         List<Map<String,String>> metricReplace = (List<Map<String,String>>) server.get("metricCharacterReplacer");
         return metricReplace;
 
@@ -166,11 +140,6 @@ public class SQLMonitorTask implements Runnable{
 
         Builder currentTimestamp(long timestamp){
             task.currentTimestamp = timestamp;
-            return this;
-        }
-
-        Builder metricReplace (List metricReplacer){
-            task.metricReplacer = metricReplacer;
             return this;
         }
 
