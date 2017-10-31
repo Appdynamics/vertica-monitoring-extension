@@ -2,11 +2,9 @@ package com.appdynamics.extensions.sql;
 
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.AMonitorRunContext;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.TaskInputArgs;
 
 import com.appdynamics.extensions.crypto.CryptoUtil;
-import com.appdynamics.extensions.util.AssertUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
@@ -22,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.extensions.sql.utils.Constants.DEFAULT_METRIC_PREFIX;
 import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
+import com.appdynamics.extensions.sql.utils.*;
+
+import javax.swing.*;
 
 
 public class SQLMonitor extends ABaseMonitor{
@@ -43,8 +44,12 @@ public class SQLMonitor extends ABaseMonitor{
     @Override
     protected void doRun(AMonitorRunContext taskExecutor) {
         List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
-//        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
 
+        //        metricCharacterReplacers();
+        //        MetricReplacerList metricReplacerList = new MetricReplacerList();
+
+        //        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
+        //        List<MetricCharacterReplacer> metricCharacterReplacers = metricReplacerList.getMetricCharacterReplacer();
         for (Map<String, String> server : servers) {
 
             try {
@@ -66,9 +71,31 @@ public class SQLMonitor extends ABaseMonitor{
         return servers.size();
     }
 
-
+//    private void metricCharacterReplacers(){
+//
+////        MetricReplacerList metricReplacerList = new MetricReplacerList();
+//
+////        List<Map<String,String>> metricReplace = (List<Map<String,String>>)configuration.getConfigYml().get("metricCharacterReplacer");
+////
+////         for(MetricCharacterReplacer replaceMap : metricReplace){
+////             MetricCharacterReplacer metricCharacterReplacer = new MetricCharacterReplacer();
+////             String key = (String)replaceMap.get("replace");
+////             String value = (String)replaceMap.get("replaceWith");
+////
+////             metricCharacterReplacer.setReplace(key);
+////             metricCharacterReplacer.setReplaceWith(value);
+////         }
+//int a;
+//
+//    }
 
     // Adding Vertica Functions
+
+//    private List<MetricCharacterReplacer> getMetricReplacer(){
+//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)configuration.getConfigYml().get("metricCharacterReplacer");
+//        return metricReplace;
+//
+//    }
 
     private String createConnectionUrl (Map server){
 
@@ -98,7 +125,7 @@ public class SQLMonitor extends ABaseMonitor{
     private SQLMonitorTask createTask(Map server, AMonitorRunContext taskExecutor) throws IOException {
         String connUrl = createConnectionUrl(server);
         Map<String, String> connectionProperties = getConnectionProperties(server);
-
+//        List<MetricCharacterReplacer> metricReplace = getMetricReplacer();
 
 
         //#TODO check if MA classloader is needed

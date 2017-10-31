@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 
+import com.appdynamics.extensions.sql.utils.MetricCharacterReplacer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -29,6 +30,8 @@ public class SQLMonitorTask implements Runnable{
     private MetricWriteHelper metricWriter;
     private JDBCConnectionAdapter jdbcAdapter;
     private Map server;
+    private List metricReplacer;
+
     private final Yaml yaml = new Yaml();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
@@ -43,8 +46,11 @@ public class SQLMonitorTask implements Runnable{
                 for(Map query: queries){
                     connection = getConnection(connection);
                     executeQuery(connection,query);
+
 //                    Map<String , BigDecimal> values = executeQuery(connection, query);
 //                    printData(values, metricPrinter);
+
+
                     closeCurrentConnection(connection);
                 }
             } catch(SQLException e){
@@ -64,26 +70,6 @@ public class SQLMonitorTask implements Runnable{
 //            metricPrinter.reportMetric(key,values.get(key));
 //        }
 //    }
-//    public void run2() {
-//
-//        List<Map> queries = (List<Map>) server.get("queries");
-//
-//        Connection connection = null;
-//        if (queries != null && !queries.isEmpty()) {
-//
-//            try{
-//                for(Map query: queries){
-//                    connection = getConnection(connection);
-//                    executeQuery(connection, query);
-//                }
-//            } catch(SQLException e){
-//                logger.error("Unable to open the jdbc connection",e);
-//            } catch (ClassNotFoundException e) {
-//                logger.error("Unable to load the driver ",e);
-//            }
-//        }
-//
-//        }
 
 
     private void  executeQuery(Connection connection, Map query) throws SQLException {
@@ -95,10 +81,11 @@ public class SQLMonitorTask implements Runnable{
 
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(query);
-
+        List<Map<String,String>> metricReplacer = getMetricReplacer();
+//        List<MetricCharacterReplacer> metricReplacer = getMetricReplacer();
 //            List<Column> columns = getColumns(query);
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName);
+        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
 
         List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet,columns);
         metricWriter.transformAndPrintMetrics(metricList);
@@ -115,6 +102,20 @@ public class SQLMonitorTask implements Runnable{
         statement = substitute(statement);
         ResultSet resultSet = jdbcAdapter.queryDatabase(connection, statement);
         return resultSet;
+    }
+
+//    private List<MetricCharacterReplacer> getMetricReplacer(){
+//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)server.get("metricCharacterReplacer");
+//        List<Map<String,String>> metrics = (List<Map<String,String>>) server.get("metricCharacterReplacer");
+//        return metricReplace;
+//
+//    }
+
+    private List<Map<String,String>> getMetricReplacer(){
+//        List<MetricCharacterReplacer> metricReplace = (List<MetricCharacterReplacer>)server.get("metricCharacterReplacer");
+        List<Map<String,String>> metricReplace = (List<Map<String,String>>) server.get("metricCharacterReplacer");
+        return metricReplace;
+
     }
 
     private Connection getConnection(Connection connection) throws SQLException, ClassNotFoundException {
@@ -165,6 +166,11 @@ public class SQLMonitorTask implements Runnable{
 
         Builder currentTimestamp(long timestamp){
             task.currentTimestamp = timestamp;
+            return this;
+        }
+
+        Builder metricReplace (List metricReplacer){
+            task.metricReplacer = metricReplacer;
             return this;
         }
 

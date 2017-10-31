@@ -26,12 +26,9 @@ dbServers:
 
       metricCharacterReplacer:
         - replace: "%"
-          replaceWith: " "
+          replaceWith: ""
         - replace: ","
           replaceWith: "-"
-
-
-
 
 
       queries:

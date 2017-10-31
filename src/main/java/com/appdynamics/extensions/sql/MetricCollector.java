@@ -2,7 +2,7 @@ package com.appdynamics.extensions.sql;
 
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.metrics.Metric;
-
+import com.appdynamics.extensions.sql.utils.MetricCharacterReplacer;
 import javax.xml.soap.Node;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -21,12 +21,15 @@ public class MetricCollector {
     private String dbServerDisplayName;
 
     private String queryDisplayName;
+//    private List<MetricCharacterReplacer> metricReplacer;
+private List<Map<String, String>> metricReplacer;
 
 
-    public MetricCollector(String metricPrefix, String dbServerDisplayName, String queryDisplayName ){
+    public MetricCollector(String metricPrefix, String dbServerDisplayName, String queryDisplayName, List<Map<String, String>> metricReplacer){
         this.metricPrefix = metricPrefix;
         this.dbServerDisplayName = dbServerDisplayName;
         this.queryDisplayName = queryDisplayName;
+        this.metricReplacer = metricReplacer;
     }
 
     public List<Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException{
@@ -44,11 +47,13 @@ public class MetricCollector {
                         metricPathAlreadyAdded = true;
                     }
                     else {
-                        String restOfPath = resultSet.getString(c.getName());
-                        if(restOfPath.contains(",")){
-                            restOfPath = restOfPath.replaceAll(",","-");
-                        }
-                        metricPath +=  METRIC_SEPARATOR + restOfPath;
+//                        String restOfPath = resultSet.getString(c.getName());
+
+//                        if(restOfPath.contains(",")){
+//                            restOfPath = restOfPath.replaceAll(",","-");
+//                        }
+
+                        metricPath +=  METRIC_SEPARATOR + resultSet.getString(c.getName());
 
                     }
                 }
@@ -57,13 +62,13 @@ public class MetricCollector {
                     String val = resultSet.getString(c.getName());
 
                     if(val != null) {
-                        String percentInValue = val.substring(val.length() - 1, val.length());
-                        if (percentInValue.equals("%")) {
-                            val = val.substring(0, val.length() - 1);
+//                        String percentInValue = val.substring(val.length() - 1, val.length());
+//                        if (percentInValue.equals("%")) {
+//                            val = val.substring(0, val.length() - 1);
+//                        }
 
-                        }
-
-
+                    val = replaceCharacter(val);
+                    updatedMetricPath = replaceCharacter(updatedMetricPath);
                     Metric current_metric ;
 
                     if(c.getConvertMap()!= null){
@@ -82,7 +87,35 @@ public class MetricCollector {
             }
             }
         }
+
+//        print(list_of_metrics);
         return list_of_metrics;
+    }
+
+    private void print(List<Metric> metrics){
+
+        for(Metric metric: metrics){
+            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
+        }
+    }
+
+    private String replaceCharacter(String metricPath){
+
+        for(Map chars : metricReplacer){
+
+//            Map view = (Map)chars;
+//            String replace = chars.getReplace();
+//            String replaceWith = chars.getReplaceWith();
+
+            String replace = (String)chars.get("replace");
+            String replaceWith = (String)chars.get("replaceWith");
+
+            if(metricPath.contains(replace)){
+                metricPath = metricPath.replaceAll(replace,replaceWith);
+            }
+
+        }
+        return metricPath;
     }
 
 //    public Map<String , BigDecimal> goThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
