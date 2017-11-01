@@ -56,12 +56,16 @@ public class MetricCollector {
                     updatedMetricPath = replaceCharacter(updatedMetricPath);
                     Metric current_metric ;
 
-                    if(c.getConvertMap()!= null){
-                        Map convert = new HashMap();
-                        convert.put("convert", c.getConvertMap());
-                        current_metric = new Metric(c.getName(), val, updatedMetricPath, convert );
-
+                    if(c.getProperties() != null){
+                        current_metric= new Metric(c.getName(), val, updatedMetricPath, c.getProperties());
                     }
+//
+//                    if(c.getConvertMap()!= null){
+//                        Map convert = new HashMap();
+//                        convert.put("convert", c.getConvertMap());
+//                        current_metric = new Metric(c.getName(), val, updatedMetricPath, convert );
+//
+//                    }
                     else{
                         current_metric = new Metric(c.getName(), val, updatedMetricPath );
                     }

@@ -3,7 +3,7 @@
 #metricPrefix: "Custom Metrics|SQL|"
 #This will create it in specific Tier. Replace <ComponentID> with TierID
 #metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
-metricPrefix: "Custom Metrics|AVertica1|Bh2"
+metricPrefix: "Custom Metrics|AVertica1|Bh5"
 
 dbServers:
     - displayName: "Vertica"
@@ -157,14 +157,15 @@ dbServers:
 
             - name: "NODE_STATE"
               type: "metricValue"
-              convert:
-                "INITIALIZING" : 0
-                "UP" : 1
-                "DOWN" : 2
-                "READY" : 3
-                "UNSAFE" : 4
-                "SHUTDOWN" : 5
-                "RECOVERING" : 6
+              properties:
+                convert:
+                  "INITIALIZING" : 0
+                  "UP" : 1
+                  "DOWN" : 2
+                  "READY" : 3
+                  "UNSAFE" : 4
+                  "SHUTDOWN" : 5
+                  "RECOVERING" : 6
 
         - displayName: "Query Metrics"
           queryStmt: "Select NODE_NAME, ACTIVE_USER_SESSION_COUNT, ACTIVE_SYSTEM_SESSION_COUNT, TOTAL_USER_SESSION_COUNT, TOTAL_SYSTEM_SESSION_COUNT, TOTAL_ACTIVE_SESSION_COUNT, TOTAL_SESSION_COUNT, RUNNING_QUERY_COUNT, EXECUTED_QUERY_COUNT  from QUERY_METRICS "

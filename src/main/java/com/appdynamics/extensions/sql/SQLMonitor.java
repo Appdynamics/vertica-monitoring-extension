@@ -18,9 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.appdynamics.extensions.sql.utils.Constants.DEFAULT_METRIC_PREFIX;
 import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
-import com.appdynamics.extensions.sql.utils.*;
 
 import javax.swing.*;
 
@@ -33,7 +31,7 @@ public class SQLMonitor extends ABaseMonitor{
 
     @Override
     protected String getDefaultMetricPrefix() {
-        return DEFAULT_METRIC_PREFIX;
+        return (String)configuration.getConfigYml().get("metricPrefix");
     }
 
     @Override
@@ -95,8 +93,8 @@ public class SQLMonitor extends ABaseMonitor{
         String connUrl = createConnectionUrl(server);
         Map<String, String> connectionProperties = getConnectionProperties(server);
 
-        //#TODO check if MA classloader is needed
-        Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
+        // TODO check if MA classloader is needed
+//        Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
 
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
@@ -148,6 +146,8 @@ public class SQLMonitor extends ABaseMonitor{
 
         taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
 
+//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_new.yml");
+
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {
             public void run() {
@@ -162,7 +162,3 @@ public class SQLMonitor extends ABaseMonitor{
 
 
 }
-
-//        //#TODO check if MA classloader is needed
-//        Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
-//

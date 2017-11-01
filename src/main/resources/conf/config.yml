@@ -52,6 +52,11 @@ dbServers:
 
             - name: "DISK_SPACE_USED_BLOCKS"
               type: "metricValue"
+              props:
+                delta: true
+                convert:{
+
+                }
 
             - name: "DISK_SPACE_USED_MB"
               type: "metricValue"

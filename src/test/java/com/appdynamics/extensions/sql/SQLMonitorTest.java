@@ -30,12 +30,12 @@ public class SQLMonitorTest {
 //    }
 
 
-    @Test
-    public void testSQLMonitoringExtension () throws TaskExecutionException{
-        SQLMonitor sqlMonitor = new SQLMonitor();
-         Map<String, String> taskArgs = new HashMap<String, String>();
-        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config.yml");
-        sqlMonitor.execute(taskArgs, null);
-
-    }
+//    @Test
+//    public void testSQLMonitoringExtension () throws TaskExecutionException{
+//        SQLMonitor sqlMonitor = new SQLMonitor();
+//         Map<String, String> taskArgs = new HashMap<String, String>();
+//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config.yml");
+//        sqlMonitor.execute(taskArgs, null);
+//
+//    }
 }

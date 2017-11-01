@@ -13,8 +13,10 @@ public class Column {
     private String timeRollupType  = MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE;
     private String clusterRollupType = MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL;
     private Map properties;
-    public Map convert;
 
+    //
+    public Map convert;
+    //
     public String getName() {
         return name;
     }

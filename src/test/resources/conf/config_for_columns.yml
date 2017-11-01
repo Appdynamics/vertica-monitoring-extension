@@ -7,4 +7,3 @@ columns:
 
   - name: "AVERAGE_CPU_USAGE_PERCENT"
     type: "metricValue"
-

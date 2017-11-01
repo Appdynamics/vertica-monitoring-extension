@@ -85,23 +85,6 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.13</version>
         </dependency>
-
-        <!--TODO remove this before shipping-->
-
-         <!--https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc-->
-        <!--<dependency>-->
-            <!--<groupId>com.microsoft.sqlserver</groupId>-->
-            <!--<artifactId>mssql-jdbc</artifactId>-->
-            <!--<version>6.2.1.jre7</version>-->
-            <!--&lt;!&ndash;<scope>test</scope>&ndash;&gt;-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>mysql</groupId>-->
-            <!--<artifactId>mysql-connector-java</artifactId>-->
-            <!--<version>8.0.7-dmr</version>-->
-        <!--</dependency>-->
-
-
     </dependencies>
 
     <build>
