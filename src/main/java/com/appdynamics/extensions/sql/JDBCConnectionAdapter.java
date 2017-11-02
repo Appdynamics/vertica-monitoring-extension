@@ -44,8 +44,8 @@ public class JDBCConnectionAdapter {
         return connection;
     }
 
-    ResultSet queryDatabase(Connection connection, String query) throws SQLException {
-        Statement stmt = connection.createStatement();
+    ResultSet queryDatabase(Connection connection, String query, Statement stmt) throws SQLException {
+         stmt = connection.createStatement();
         return stmt.executeQuery(query);
     }
 

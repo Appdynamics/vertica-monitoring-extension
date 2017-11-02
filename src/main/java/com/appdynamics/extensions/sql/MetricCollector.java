@@ -15,7 +15,6 @@ public class MetricCollector {
     private static final String METRIC_SEPARATOR = "|";
     private String metricPrefix;
     private String dbServerDisplayName;
-
     private String queryDisplayName;
     private List<Map<String, String>> metricReplacer;
 
@@ -29,12 +28,10 @@ public class MetricCollector {
 
     public List<Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException{
         List<Metric> list_of_metrics = new ArrayList<Metric>();
-
         while (resultSet.next()){
             String metricPath = "";
             boolean metricPathAlreadyAdded = false;
             metricPath = getMetricPrefix(dbServerDisplayName, queryDisplayName);
-
             for(Column c: columns){
                 if (c.getType().equals("metricPathName")){
                     if(metricPathAlreadyAdded == false){
@@ -43,19 +40,15 @@ public class MetricCollector {
                     }
                     else {
                         metricPath +=  METRIC_SEPARATOR + resultSet.getString(c.getName());
-
                     }
                 }
                 else if(c.getType().equals("metricValue")){
                     String updatedMetricPath = metricPath +  METRIC_SEPARATOR + c.getName() ;
                     String val = resultSet.getString(c.getName());
-
                     if(val != null) {
-
                         val = replaceCharacter(val);
                         updatedMetricPath = replaceCharacter(updatedMetricPath);
                         Metric current_metric ;
-
                         if(c.getProperties() != null){
                             current_metric= new Metric(c.getName(), val, updatedMetricPath, c.getProperties());
                         }

@@ -1,8 +1,8 @@
 package com.appdynamics.extensions.sql;
 
 import com.appdynamics.extensions.ABaseMonitor;
-import com.appdynamics.extensions.AMonitorRunContext;
 import com.appdynamics.extensions.TaskInputArgs;
+import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.crypto.CryptoUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -39,7 +39,8 @@ public class SQLMonitor extends ABaseMonitor {
     }
 
     @Override
-    protected void doRun(AMonitorRunContext taskExecutor) {
+    protected void doRun(TasksExecutionServiceProvider serviceProvider) {
+
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
 
         previousTimestamp = currentTimestamp;
@@ -47,8 +48,8 @@ public class SQLMonitor extends ABaseMonitor {
         if(previousTimestamp != 0) {
             for (Map<String, String> server : servers) {
                 try {
-                    SQLMonitorTask task = createTask(server, taskExecutor);
-                    taskExecutor.submit(server.get("displayName"), task);
+                    SQLMonitorTask task = createTask(server, serviceProvider);
+                    serviceProvider.submit(server.get("displayName"), task);
                 } catch (IOException e) {
                     logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"), ""));
                 }
@@ -86,13 +87,13 @@ public class SQLMonitor extends ABaseMonitor {
 
     }
 
-    private SQLMonitorTask createTask(Map server, AMonitorRunContext taskExecutor) throws IOException {
+    private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {
         String connUrl = createConnectionUrl(server);
         Map<String, String> connectionProperties = getConnectionProperties(server);
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
         return new SQLMonitorTask.Builder()
-                .metricWriter(taskExecutor.getMetricWriteHelper())
+                .metricWriter(serviceProvider.getMetricWriteHelper())
                 .metricPrefix(configuration.getMetricPrefix())
                 .jdbcAdapter(jdbcAdapter)
                 .previousTimestamp(previousTimestamp)
