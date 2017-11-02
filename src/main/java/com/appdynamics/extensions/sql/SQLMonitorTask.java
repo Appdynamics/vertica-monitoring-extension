@@ -1,26 +1,17 @@
 package com.appdynamics.extensions.sql;
 
-import com.appdynamics.extensions.metrics.Metric;
-import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.extensions.MetricWriteHelper;
-import com.appdynamics.extensions.util.YmlUtils;
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.appdynamics.extensions.metrics.Metric;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-
-
-import org.codehaus.jackson.map.ObjectMapper;
-
-public class SQLMonitorTask implements Runnable{
+public class SQLMonitorTask implements Runnable {
 
     private static final String METRIC_SEPARATOR = "|";
     private long previousTimestamp;
@@ -33,50 +24,57 @@ public class SQLMonitorTask implements Runnable{
     private final Yaml yaml = new Yaml();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
-    public void run(){
+    public void run() {
 //        MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
 
         List<Map> queries = (List<Map>) server.get("queries");
         Connection connection = null;
         if (queries != null && !queries.isEmpty()) {
-
             try{
-                for(Map query: queries){
-                    connection = getConnection(connection);
-                    executeQuery(connection,query);
-                    closeCurrentConnection(connection);
+                connection = getConnection();
+                for (Map query : queries) {
+                    try {
+                        executeQuery(connection, query);
+                    } catch (SQLException e) {
+                        logger.error("Error ....", e);
+                    }
                 }
-            } catch(SQLException e){
-                logger.error("Unable to open the jdbc connection",e);
-            } catch (ClassNotFoundException e) {
-                logger.error("Unable to load the driver ",e);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            catch (SQLException e){
+                logger.error("Error opening the connection",e);
+            }
+            catch (ClassNotFoundException e){
+                logger.error("Class not found while opening the connection",e);
+            }
+            finally {
+                try {
+                    closeConnection(connection);
+                } catch (Exception e) {
+                    logger.error("Issue closing the connection",e);
+                }
+            }
+
         }
 
     }
 
 
-
-    private void  executeQuery(Connection connection, Map query) throws SQLException {
+    private void executeQuery(Connection connection, Map query) throws SQLException {
 
         String dbServerDisplayName = (String) server.get("displayName");
-        String queryDisplayName = (String)query.get("displayName");
-
+        String queryDisplayName = (String) query.get("displayName");
         ResultSet resultSet = getResultSet(connection, query);
 
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(query);
-        List<Map<String,String>> metricReplacer = getMetricReplacer();
+        List<Map<String, String>> metricReplacer = getMetricReplacer();
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
+        MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
 
-        List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet,columns);
+        List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet, columns);
         metricWriter.transformAndPrintMetrics(metricList);
 
     }
-
 
 
     private ResultSet getResultSet(Connection connection, Map query) throws SQLException {
@@ -86,64 +84,62 @@ public class SQLMonitorTask implements Runnable{
         return resultSet;
     }
 
-    private List<Map<String,String>> getMetricReplacer(){
-        List<Map<String,String>> metricReplace = (List<Map<String,String>>) server.get("metricCharacterReplacer");
+    private List<Map<String, String>> getMetricReplacer() {
+        List<Map<String, String>> metricReplace = (List<Map<String, String>>) server.get("metricCharacterReplacer");
         return metricReplace;
 
     }
 
-    private Connection getConnection(Connection connection) throws SQLException, ClassNotFoundException {
-
-        connection = jdbcAdapter.open((String)server.get("driver"));
+    private Connection getConnection() throws SQLException, ClassNotFoundException {
+        Connection connection = jdbcAdapter.open((String) server.get("driver"));
         return connection;
     }
 
-    private void closeCurrentConnection(Connection connection) throws Exception {
-
+    private void closeConnection(Connection connection) throws Exception {
         jdbcAdapter.closeConnection(connection);
     }
 
     private String substitute(String statement) {
         String stmt = statement;
-        stmt = stmt.replace("{{previousTimestamp}}",Long.toString(previousTimestamp));
-        stmt = stmt.replace("{{currentTimestamp}}",Long.toString(currentTimestamp));
+        stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
+        stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
         return stmt;
     }
 
     public static class Builder {
         private SQLMonitorTask task = new SQLMonitorTask();
 
-        Builder metricPrefix (String metricPrefix) {
+        Builder metricPrefix(String metricPrefix) {
             task.metricPrefix = metricPrefix;
             return this;
         }
 
-        Builder metricWriter (MetricWriteHelper metricWriter) {
+        Builder metricWriter(MetricWriteHelper metricWriter) {
             task.metricWriter = metricWriter;
             return this;
         }
 
-        Builder server (Map server) {
+        Builder server(Map server) {
             task.server = server;
             return this;
         }
 
-        Builder jdbcAdapter (JDBCConnectionAdapter adapter) {
+        Builder jdbcAdapter(JDBCConnectionAdapter adapter) {
             task.jdbcAdapter = adapter;
             return this;
         }
 
-        Builder previousTimestamp(long timestamp){
+        Builder previousTimestamp(long timestamp) {
             task.previousTimestamp = timestamp;
             return this;
         }
 
-        Builder currentTimestamp(long timestamp){
+        Builder currentTimestamp(long timestamp) {
             task.currentTimestamp = timestamp;
             return this;
         }
 
-        SQLMonitorTask build () {
+        SQLMonitorTask build() {
             return task;
         }
     }

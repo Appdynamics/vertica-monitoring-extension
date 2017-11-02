@@ -3,11 +3,9 @@ package com.appdynamics.extensions.sql;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.AMonitorRunContext;
 import com.appdynamics.extensions.TaskInputArgs;
-
 import com.appdynamics.extensions.crypto.CryptoUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,18 +18,16 @@ import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
 
-import javax.swing.*;
 
-
-public class SQLMonitor extends ABaseMonitor{
+public class SQLMonitor extends ABaseMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(SQLMonitor.class);
-    private long previousTimestamp,currentTimestamp;
+    private long previousTimestamp, currentTimestamp;
     private static final String CONFIG_ARG = "config-file";
 
     @Override
     protected String getDefaultMetricPrefix() {
-        return (String)configuration.getConfigYml().get("metricPrefix");
+        return (String) configuration.getConfigYml().get("metricPrefix");
     }
 
     @Override
@@ -41,47 +37,37 @@ public class SQLMonitor extends ABaseMonitor{
 
     @Override
     protected void doRun(AMonitorRunContext taskExecutor) {
-        List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
-
+        List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
         for (Map<String, String> server : servers) {
-
             try {
                 SQLMonitorTask task = createTask(server, taskExecutor);
-                taskExecutor.submit(server.get("displayName"),task);
-                }
-
-        catch (IOException  e){
-            logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"),""));
-
-        }
+                taskExecutor.submit(server.get("displayName"), task);
+            } catch (IOException e) {
+                logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"), ""));
+            }
         }
     }
 
     @Override
     protected int getTaskCount() {
-        List<Map<String,String>> servers = (List<Map<String,String>>)configuration.getConfigYml().get("dbServers");
+        List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
         return servers.size();
     }
 
 
-    private String createConnectionUrl (Map server){
-
-        String url = Util.convertToString(server.get("connectionUrl"),"");
-
-        return url;
+    private String createConnectionUrl(Map server) {
+        return Util.convertToString(server.get("connectionUrl"), "");
     }
 
 
+    private String getPassword(Map server, String normal_password) {
 
-    private String getPassword(Map server, String normal_password){
-
-        String encryptionPassword = Util.convertToString(server.get("encryptedPassword"),"");
-        String encryptionKey = Util.convertToString(server.get("encryptionKey"),"");
+        String encryptionPassword = Util.convertToString(server.get("encryptedPassword"), "");
+        String encryptionKey = Util.convertToString(server.get("encryptionKey"), "");
         String password;
-        if(!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)){
-            password = getEncryptedPassword(encryptionKey,encryptionPassword);
-        }
-        else{
+        if (!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)) {
+            password = getEncryptedPassword(encryptionKey, encryptionPassword);
+        } else {
             password = normal_password;
         }
 
@@ -92,10 +78,6 @@ public class SQLMonitor extends ABaseMonitor{
     private SQLMonitorTask createTask(Map server, AMonitorRunContext taskExecutor) throws IOException {
         String connUrl = createConnectionUrl(server);
         Map<String, String> connectionProperties = getConnectionProperties(server);
-
-        // TODO check if MA classloader is needed
-//        Thread.currentThread().setContextClassLoader(AManagedMonitor.class.getClassLoader());
-
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
         return new SQLMonitorTask.Builder()
@@ -108,30 +90,27 @@ public class SQLMonitor extends ABaseMonitor{
 
     }
 
-    private Map<String, String > getConnectionProperties(Map server){
-        Map<String, String > connectionProperties = new LinkedHashMap<String, String>();
-        ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>)server.get("connectionProperties");
+    private Map<String, String> getConnectionProperties(Map server) {
+        Map<String, String> connectionProperties = new LinkedHashMap<String, String>();
+        List<Map<String, String>> listOfMaps = (List<Map<String, String>>) server.get("connectionProperties");
 
-        for(LinkedHashMap linkedHashMap : arrayList){
-            for(Object key: linkedHashMap.keySet()){
-                if(key == "password") {
-                    String password = getPassword(server,(String)linkedHashMap.get(key));
-                    connectionProperties.put((String)key, password);
+        for (Map amap : listOfMaps) {
+            for (Object key : amap.keySet()) {
+                if (key == "password") {
+                    String password = getPassword(server, (String) amap.get(key));
+                    connectionProperties.put((String) key, password);
+                } else {
+                    connectionProperties.put((String) key, (String) amap.get(key));
                 }
-                else{
-                    connectionProperties.put((String)key, (String)linkedHashMap.get(key));
-                }
-
             }
         }
-
         return connectionProperties;
     }
 
-    private String getEncryptedPassword(String encryptionKey,String encryptedPassword) {
-        java.util.Map<String,String> cryptoMap = Maps.newHashMap();
-        cryptoMap.put(PASSWORD_ENCRYPTED,encryptedPassword);
-        cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY,encryptionKey);
+    private String getEncryptedPassword(String encryptionKey, String encryptedPassword) {
+        java.util.Map<String, String> cryptoMap = Maps.newHashMap();
+        cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
+        cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
 
