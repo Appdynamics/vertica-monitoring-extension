@@ -22,13 +22,16 @@ import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
 public class SQLMonitor extends ABaseMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(SQLMonitor.class);
-    private long previousTimestamp, currentTimestamp;
+    private long previousTimestamp = 0;
+    private long currentTimestamp = System.currentTimeMillis();
     private static final String CONFIG_ARG = "config-file";
 
     @Override
     protected String getDefaultMetricPrefix() {
-        return (String) configuration.getConfigYml().get("metricPrefix");
+//        return (String) configuration.getConfigYml().get("metricPrefix");
+    return "Custom Metrics|";
     }
+
 
     @Override
     public String getMonitorName() {
@@ -38,14 +41,22 @@ public class SQLMonitor extends ABaseMonitor {
     @Override
     protected void doRun(AMonitorRunContext taskExecutor) {
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
-        for (Map<String, String> server : servers) {
-            try {
-                SQLMonitorTask task = createTask(server, taskExecutor);
-                taskExecutor.submit(server.get("displayName"), task);
-            } catch (IOException e) {
-                logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"), ""));
+
+        previousTimestamp = currentTimestamp;
+        currentTimestamp = System.currentTimeMillis();
+        if(previousTimestamp != 0) {
+            for (Map<String, String> server : servers) {
+                try {
+                    SQLMonitorTask task = createTask(server, taskExecutor);
+                    taskExecutor.submit(server.get("displayName"), task);
+                } catch (IOException e) {
+                    logger.error("Cannot construct JDBC uri for {}", Util.convertToString(server.get("displayName"), ""));
+                }
             }
         }
+
+
+
     }
 
     @Override
@@ -56,7 +67,8 @@ public class SQLMonitor extends ABaseMonitor {
 
 
     private String createConnectionUrl(Map server) {
-        return Util.convertToString(server.get("connectionUrl"), "");
+        String url = Util.convertToString(server.get("connectionUrl"), "");
+        return url;
     }
 
 
@@ -70,7 +82,6 @@ public class SQLMonitor extends ABaseMonitor {
         } else {
             password = normal_password;
         }
-
         return password;
 
     }
@@ -121,11 +132,9 @@ public class SQLMonitor extends ABaseMonitor {
 
         final SQLMonitor monitor = new SQLMonitor();
         final Map<String, String> taskArgs = new HashMap<String, String>();
-//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config.yml");
 
         taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
 
-//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_new.yml");
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {

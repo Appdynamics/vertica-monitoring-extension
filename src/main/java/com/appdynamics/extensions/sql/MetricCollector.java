@@ -52,31 +52,25 @@ public class MetricCollector {
 
                     if(val != null) {
 
-                    val = replaceCharacter(val);
-                    updatedMetricPath = replaceCharacter(updatedMetricPath);
-                    Metric current_metric ;
+                        val = replaceCharacter(val);
+                        updatedMetricPath = replaceCharacter(updatedMetricPath);
+                        Metric current_metric ;
 
-                    if(c.getProperties() != null){
-                        current_metric= new Metric(c.getName(), val, updatedMetricPath, c.getProperties());
-                    }
-//
-//                    if(c.getConvertMap()!= null){
-//                        Map convert = new HashMap();
-//                        convert.put("convert", c.getConvertMap());
-//                        current_metric = new Metric(c.getName(), val, updatedMetricPath, convert );
-//
-//                    }
-                    else{
-                        current_metric = new Metric(c.getName(), val, updatedMetricPath );
-                    }
-                    list_of_metrics.add(current_metric);
+                        if(c.getProperties() != null){
+                            current_metric= new Metric(c.getName(), val, updatedMetricPath, c.getProperties());
+                        }
+
+                        else{
+                            current_metric = new Metric(c.getName(), val, updatedMetricPath );
+                        }
+                        list_of_metrics.add(current_metric);
 
                     }
-            }
+                }
             }
         }
 
-//        print(list_of_metrics);
+        print(list_of_metrics);
         return list_of_metrics;
     }
 

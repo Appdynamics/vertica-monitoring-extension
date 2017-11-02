@@ -24,27 +24,59 @@ public class SQLMonitorTask implements Runnable {
     private final Yaml yaml = new Yaml();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
-    public void run() {
-//        MetricPrinter metricPrinter = new MetricPrinter(metricWriter);
+//    public void run() {
+//
+//        List<Map> queries = (List<Map>) server.get("queries");
+//        Connection connection = null;
+//        if (queries != null && !queries.isEmpty()) {
+//            try{
+//                connection = getConnection();
+//                for (Map query : queries) {
+//                    try {
+//                        executeQuery(connection, query);
+//                    } catch (SQLException e) {
+//                        logger.error("Error ....", e);
+//                    }
+//                }
+//            }
+//            catch (SQLException e){
+//                logger.error("Error opening the connection",e);
+//            }
+//            catch (ClassNotFoundException e){
+//                logger.error("Class not found while opening the connection",e);
+//            }
+//            finally {
+//                try {
+//                    closeConnection(connection);
+//                } catch (Exception e) {
+//                    logger.error("Issue closing the connection",e);
+//                }
+//            }
+//
+//        }
+//
+//    }
 
-        List<Map> queries = (List<Map>) server.get("queries");
+    public void run(){
+        List<Map> queries = (List<Map>)server.get("queries");
         Connection connection = null;
-        if (queries != null && !queries.isEmpty()) {
+
+        if(queries!=null && !queries.isEmpty()){
             try{
                 connection = getConnection();
-                for (Map query : queries) {
-                    try {
-                        executeQuery(connection, query);
-                    } catch (SQLException e) {
-                        logger.error("Error ....", e);
+                for (Map query : queries){
+                    try{
+                        executeQuery(connection,query);
+                    } catch (SQLException e){
+                        logger.error("Error during executing query.");
                     }
                 }
             }
             catch (SQLException e){
-                logger.error("Error opening the connection",e);
+                logger.error("Error Opening connection", e);
             }
             catch (ClassNotFoundException e){
-                logger.error("Class not found while opening the connection",e);
+                logger.error("Class not found while opening connection", e);
             }
             finally {
                 try {
@@ -53,9 +85,7 @@ public class SQLMonitorTask implements Runnable {
                     logger.error("Issue closing the connection",e);
                 }
             }
-
         }
-
     }
 
 
@@ -63,17 +93,29 @@ public class SQLMonitorTask implements Runnable {
 
         String dbServerDisplayName = (String) server.get("displayName");
         String queryDisplayName = (String) query.get("displayName");
-        ResultSet resultSet = getResultSet(connection, query);
+        ResultSet resultSet = null;
+        try {
+             resultSet = getResultSet(connection, query);
 
-        ColumnGenerator columnGenerator = new ColumnGenerator();
-        List<Column> columns = columnGenerator.getColumns(query);
-        List<Map<String, String>> metricReplacer = getMetricReplacer();
+            ColumnGenerator columnGenerator = new ColumnGenerator();
+            List<Column> columns = columnGenerator.getColumns(query);
+            List<Map<String, String>> metricReplacer = getMetricReplacer();
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
+            MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
 
-        List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet, columns);
-        metricWriter.transformAndPrintMetrics(metricList);
-
+            List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet, columns);
+            metricWriter.transformAndPrintMetrics(metricList);
+        } catch (SQLException e){
+            logger.error("Error in connecting the result. ",e);
+        } finally {
+            if (resultSet != null){
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    logger.error("Unable to close the ResultSet", e);
+                }
+            }
+        }
     }
 
 
@@ -81,6 +123,8 @@ public class SQLMonitorTask implements Runnable {
         String statement = (String) query.get("queryStmt");
         statement = substitute(statement);
         ResultSet resultSet = jdbcAdapter.queryDatabase(connection, statement);
+
+
         return resultSet;
     }
 
