@@ -92,9 +92,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
         Statement statement = null;
-
         ResultSet resultSet = jdbcAdapter.queryDatabase(connection, queryStmt, statement);
-
         if (statement != null) {
             try {
                 jdbcAdapter.closeStatement(statement);
@@ -108,7 +106,6 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private List<Map<String, String>> getMetricReplacer() {
         List<Map<String, String>> metricReplace = (List<Map<String, String>>) server.get("metricCharacterReplacer");
         return metricReplace;
-
     }
 
     private Connection getConnection() throws SQLException, ClassNotFoundException {
@@ -131,11 +128,10 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         logger.debug("Task Complete");
         if (status == true) {
             BigDecimal one = new BigDecimal(1);
-            metricWriter.printMetric(metricPrefix, one, "AVG.AVG.AVG");
+            metricWriter.printMetric(metricPrefix+"|"+(String)server.get("displayName"), one, "AVG.AVG.IND");
         } else {
             BigDecimal zero = new BigDecimal(0);
-
-            metricWriter.printMetric(metricPrefix, zero, "AVG.AVG.AVG");
+            metricWriter.printMetric(metricPrefix+"|"+(String)server.get("displayName"), zero, "AVG.AVG.IND");
         }
     }
 

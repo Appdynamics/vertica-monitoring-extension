@@ -32,7 +32,6 @@ public class SQLMonitor extends ABaseMonitor {
     return "Custom Metrics|";
     }
 
-
     @Override
     public String getMonitorName() {
         return "Vertica Monitor";
@@ -55,9 +54,6 @@ public class SQLMonitor extends ABaseMonitor {
                 }
             }
         }
-
-
-
     }
 
     @Override
@@ -72,9 +68,7 @@ public class SQLMonitor extends ABaseMonitor {
         return url;
     }
 
-
     private String getPassword(Map server, String normal_password) {
-
         String encryptionPassword = Util.convertToString(server.get("encryptedPassword"), "");
         String encryptionKey = Util.convertToString(server.get("encryptionKey"), "");
         String password;
@@ -84,7 +78,6 @@ public class SQLMonitor extends ABaseMonitor {
             password = normal_password;
         }
         return password;
-
     }
 
     private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {
@@ -125,7 +118,6 @@ public class SQLMonitor extends ABaseMonitor {
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
-
 
     // End of Vertica Functions
 
