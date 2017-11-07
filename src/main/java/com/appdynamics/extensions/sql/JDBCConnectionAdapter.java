@@ -44,16 +44,15 @@ public class JDBCConnectionAdapter {
         return connection;
     }
 
-    ResultSet queryDatabase(Connection connection, String query, Statement stmt) throws SQLException {
-         stmt = connection.createStatement();
+    ResultSet queryDatabase(String query, Statement stmt) throws SQLException {
         return stmt.executeQuery(query);
     }
 
-    void closeStatement(Statement statement) throws Exception{
+    void closeStatement(Statement statement) throws SQLException{
         statement.close();
     }
 
-    void closeConnection(Connection connection) throws Exception {
+    void closeConnection(Connection connection) throws SQLException {
         connection.close();
     }
 }

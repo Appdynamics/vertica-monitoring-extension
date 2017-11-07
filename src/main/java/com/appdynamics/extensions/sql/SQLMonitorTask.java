@@ -24,7 +24,6 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private JDBCConnectionAdapter jdbcAdapter;
     private Map server;
     private Boolean status = true;
-    private final Yaml yaml = new Yaml();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
     public void run() {
@@ -91,13 +90,13 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private ResultSet getResultSet(Connection connection, Map query) throws SQLException {
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
-        Statement statement = null;
-        ResultSet resultSet = jdbcAdapter.queryDatabase(connection, queryStmt, statement);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
         if (statement != null) {
             try {
                 jdbcAdapter.closeStatement(statement);
-            } catch (Exception e) {
-                logger.error("Unable to close Statement");
+            } catch (SQLException e) {
+                logger.error("Unable to close Statement",e);
             }
         }
         return resultSet;
@@ -124,6 +123,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         return stmt;
     }
 
+    //#TODO
     public void onTaskComplete() {
         logger.debug("Task Complete");
         if (status == true) {
