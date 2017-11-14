@@ -58,16 +58,18 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     public void run() {
         List<Map> queries = (List<Map>) server.get("queries");
         Connection connection = null;
-        ResultSet resultSet = null;
-        Statement statement = null;
+//        ResultSet resultSet = null;
+//        Statement statement = null;
         if (queries != null && !queries.isEmpty()) {
             try {
                 connection = getConnection();
                 for (Map query : queries) {
                     try {
-                        resultSet = executeQuery(connection, query, resultSet, statement);
-                        List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
-                        metricWriter.transformAndPrintMetrics(metricList);
+                         executeQuery(connection, query);
+
+//                        resultSet = executeQuery(connection, query, resultSet, statement);
+//                        List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
+//                        metricWriter.transformAndPrintMetrics(metricList);
 
                     } catch (SQLException e) {
                         logger.error("Error during executing query.");
@@ -86,33 +88,37 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                     logger.error("Issue closing the connection", e);
                 }
 
-                try{
-                    resultSet.close();
-                }
-                catch (Exception rs){
-                    logger.error("Unable to close ResultSet", rs);
-                }
 
-                try{
-                    jdbcAdapter.closeStatement(statement);
-                }
-                catch (Exception S){
-                    logger.error("Unable to close Statement", S);
-                }
             }
         }
     }
 
-    private ResultSet executeQuery (Connection connection, Map query, ResultSet resultSet, Statement statement) throws SQLException {
+    private void executeQuery (Connection connection, Map query) throws SQLException {
+        Statement statement = null;
+        ResultSet resultSet = null;
 
         try {
             resultSet = getResultSet(connection, query, statement);
+            List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
+            metricWriter.transformAndPrintMetrics(metricList);
 
         } catch (SQLException e) {
             logger.error("Error in connecting the result. ", e);
         }
+        finally {
+            if (resultSet != null) try {
+                resultSet.close();
+            } catch (SQLException e) {
+                logger.error("Unable to close the ResultSet", e);
+            }
+            if (statement != null) try {
+                statement.close();
+            } catch (SQLException e) {
+                logger.error("Unable to close the Statement", e);
+            }
+        }
 
-        return resultSet;
+//        return resultSet;
     }
 
     private List<Metric> getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException{
