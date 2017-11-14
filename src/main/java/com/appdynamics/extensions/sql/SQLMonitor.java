@@ -61,22 +61,9 @@ public class SQLMonitor extends ABaseMonitor {
         return servers.size();
     }
 
-
     private String createConnectionUrl(Map server) {
         String url = Util.convertToString(server.get("connectionUrl"), "");
         return url;
-    }
-
-    private String getPassword(Map server, String normal_password) {
-        String encryptionPassword = Util.convertToString(server.get("encryptedPassword"), "");
-        String encryptionKey = Util.convertToString(server.get("encryptionKey"), "");
-        String password;
-        if (!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)) {
-            password = getEncryptedPassword(encryptionKey, encryptionPassword);
-        } else {
-            password = normal_password;
-        }
-        return password;
     }
 
     private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {
@@ -111,14 +98,24 @@ public class SQLMonitor extends ABaseMonitor {
         return connectionProperties;
     }
 
+    private String getPassword(Map server, String normal_password) {
+        String encryptionPassword = Util.convertToString(server.get("encryptedPassword"), "");
+        String encryptionKey = Util.convertToString(server.get("encryptionKey"), "");
+        String password;
+        if (!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptionPassword)) {
+            password = getEncryptedPassword(encryptionKey, encryptionPassword);
+        } else {
+            password = normal_password;
+        }
+        return password;
+    }
+
     private String getEncryptedPassword(String encryptionKey, String encryptedPassword) {
         java.util.Map<String, String> cryptoMap = Maps.newHashMap();
         cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
-
-    // End of Vertica Functions
 
     public static void main(String[] args) throws TaskExecutionException {
 

@@ -3,6 +3,7 @@ package com.appdynamics.extensions.sql;
 import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.metrics.Metric;
+import com.sun.org.apache.regexp.internal.RE;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.plaf.nimbus.State;
@@ -24,53 +25,16 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private Boolean status = true;
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
-//    public void run11() {
-//        List<Map> queries = (List<Map>) server.get("queries");
-//        Connection connection = null;
-//
-//        if (queries != null && !queries.isEmpty()) {
-//            try {
-//                connection = getConnection();
-//                for (Map query : queries) {
-//                    try {
-//                        executeQuery(connection, query);
-//                    } catch (SQLException e) {
-//                        logger.error("Error during executing query.");
-//                    }
-//                }
-//            } catch (SQLException e) {
-//                logger.error("Error Opening connection", e);
-//                status = false;
-//            } catch (ClassNotFoundException e) {
-//                logger.error("Class not found while opening connection", e);
-//                status = false;
-//            } finally {
-//                try {
-//                    closeConnection(connection);
-//                } catch (Exception e) {
-//                    logger.error("Issue closing the connection", e);
-//                }
-//            }
-//        }
-//    }
-
 
     public void run() {
         List<Map> queries = (List<Map>) server.get("queries");
         Connection connection = null;
-//        ResultSet resultSet = null;
-//        Statement statement = null;
         if (queries != null && !queries.isEmpty()) {
             try {
                 connection = getConnection();
                 for (Map query : queries) {
                     try {
                          executeQuery(connection, query);
-
-//                        resultSet = executeQuery(connection, query, resultSet, statement);
-//                        List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
-//                        metricWriter.transformAndPrintMetrics(metricList);
-
                     } catch (SQLException e) {
                         logger.error("Error during executing query.");
                     }
@@ -87,8 +51,6 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 } catch (Exception e) {
                     logger.error("Issue closing the connection", e);
                 }
-
-
             }
         }
     }
@@ -98,7 +60,8 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         ResultSet resultSet = null;
 
         try {
-            resultSet = getResultSet(connection, query, statement);
+            statement = getStatement(connection, statement);
+            resultSet = getResultSet(query,statement,resultSet);
             List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
             metricWriter.transformAndPrintMetrics(metricList);
 
@@ -106,15 +69,17 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
             logger.error("Error in connecting the result. ", e);
         }
         finally {
-            if (resultSet != null) try {
-                resultSet.close();
-            } catch (SQLException e) {
-                logger.error("Unable to close the ResultSet", e);
-            }
+
             if (statement != null) try {
                 statement.close();
             } catch (SQLException e) {
                 logger.error("Unable to close the Statement", e);
+            }
+
+            if (resultSet != null) try {
+                resultSet.close();
+            } catch (SQLException e) {
+                logger.error("Unable to close the ResultSet", e);
             }
         }
 
@@ -134,15 +99,26 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         return metricList;
     }
 
+    private Statement getStatement(Connection connection, Statement statement)throws SQLException{
+        statement = connection.createStatement();
+        return statement;
+    }
 
-
-    private ResultSet getResultSet(Connection connection, Map query, Statement statement) throws SQLException {
+    private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException{
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
-        statement = connection.createStatement();
-        ResultSet resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
+
+        resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
         return resultSet;
     }
+
+//    private ResultSet getResultSet(Connection connection, Map query, Statement statement) throws SQLException {
+//        String queryStmt = (String) query.get("queryStmt");
+//        queryStmt = substitute(queryStmt);
+//        statement = connection.createStatement();
+//        ResultSet resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
+//        return resultSet;
+//    }
 
     private List<Map<String, String>> getMetricReplacer() {
         List<Map<String, String>> metricReplace = (List<Map<String, String>>) server.get("metricCharacterReplacer");
