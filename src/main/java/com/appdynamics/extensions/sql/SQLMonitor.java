@@ -28,7 +28,7 @@ public class SQLMonitor extends ABaseMonitor {
 
     @Override
     protected String getDefaultMetricPrefix() {
-    return "Custom Metrics|Vertica";
+        return "Custom Metrics|Vertica";
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SQLMonitor extends ABaseMonitor {
 
         previousTimestamp = currentTimestamp;
         currentTimestamp = System.currentTimeMillis();
-        if(previousTimestamp != 0) {
+        if (previousTimestamp != 0) {
             for (Map<String, String> server : servers) {
                 try {
                     SQLMonitorTask task = createTask(server, serviceProvider);

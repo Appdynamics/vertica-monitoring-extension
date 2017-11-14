@@ -3,10 +3,8 @@ package com.appdynamics.extensions.sql;
 import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.metrics.Metric;
-import com.sun.org.apache.regexp.internal.RE;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,7 +32,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 connection = getConnection();
                 for (Map query : queries) {
                     try {
-                         executeQuery(connection, query);
+                        executeQuery(connection, query);
                     } catch (SQLException e) {
                         logger.error("Error during executing query.");
                     }
@@ -55,20 +53,19 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         }
     }
 
-    private void executeQuery (Connection connection, Map query) throws SQLException {
+    private void executeQuery(Connection connection, Map query) throws SQLException {
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
             statement = getStatement(connection, statement);
-            resultSet = getResultSet(query,statement,resultSet);
-            List<Metric> metricList = getMetricsFromResultSet(query,resultSet);
+            resultSet = getResultSet(query, statement, resultSet);
+            List<Metric> metricList = getMetricsFromResultSet(query, resultSet);
             metricWriter.transformAndPrintMetrics(metricList);
 
         } catch (SQLException e) {
             logger.error("Error in connecting the result. ", e);
-        }
-        finally {
+        } finally {
 
             if (statement != null) try {
                 statement.close();
@@ -82,11 +79,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 logger.error("Unable to close the ResultSet", e);
             }
         }
-
-//        return resultSet;
     }
 
-    private List<Metric> getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException{
+    private List<Metric> getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException {
         String dbServerDisplayName = (String) server.get("displayName");
         String queryDisplayName = (String) query.get("displayName");
         ColumnGenerator columnGenerator = new ColumnGenerator();
@@ -99,12 +94,12 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         return metricList;
     }
 
-    private Statement getStatement(Connection connection, Statement statement)throws SQLException{
+    private Statement getStatement(Connection connection, Statement statement) throws SQLException {
         statement = connection.createStatement();
         return statement;
     }
 
-    private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException{
+    private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException {
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
 
@@ -112,13 +107,6 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         return resultSet;
     }
 
-//    private ResultSet getResultSet(Connection connection, Map query, Statement statement) throws SQLException {
-//        String queryStmt = (String) query.get("queryStmt");
-//        queryStmt = substitute(queryStmt);
-//        statement = connection.createStatement();
-//        ResultSet resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
-//        return resultSet;
-//    }
 
     private List<Map<String, String>> getMetricReplacer() {
         List<Map<String, String>> metricReplace = (List<Map<String, String>>) server.get("metricCharacterReplacer");
@@ -144,9 +132,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     public void onTaskComplete() {
         logger.debug("Task Complete");
         if (status == true) {
-            metricWriter.printMetric(metricPrefix+"|"+(String)server.get("displayName"), "1", "AVG","AVG","IND");
+            metricWriter.printMetric(metricPrefix + "|" + (String) server.get("displayName"), "1", "AVG", "AVG", "IND");
         } else {
-            metricWriter.printMetric(metricPrefix+"|"+(String)server.get("displayName"), "0", "AVG","AVG","IND");
+            metricWriter.printMetric(metricPrefix + "|" + (String) server.get("displayName"), "0", "AVG", "AVG", "IND");
         }
     }
 
