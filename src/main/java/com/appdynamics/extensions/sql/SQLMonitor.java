@@ -61,10 +61,7 @@ public class SQLMonitor extends ABaseMonitor {
         return servers.size();
     }
 
-    private String createConnectionUrl(Map server) {
-        String url = Util.convertToString(server.get("connectionUrl"), "");
-        return url;
-    }
+
 
     private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {
         String connUrl = createConnectionUrl(server);
@@ -79,6 +76,11 @@ public class SQLMonitor extends ABaseMonitor {
                 .currentTimestamp(currentTimestamp)
                 .server(server).build();
 
+    }
+
+    private String createConnectionUrl(Map server) {
+        String url = Util.convertToString(server.get("connectionUrl"), "");
+        return url;
     }
 
     private Map<String, String> getConnectionProperties(Map server) {
@@ -122,7 +124,7 @@ public class SQLMonitor extends ABaseMonitor {
         final SQLMonitor monitor = new SQLMonitor();
         final Map<String, String> taskArgs = new HashMap<String, String>();
 
-        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
+        taskArgs.put(CONFIG_ARG, "src/test/resources/conf/config_generic.yml");
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {

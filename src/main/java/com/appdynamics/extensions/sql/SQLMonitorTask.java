@@ -60,15 +60,14 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         try {
             statement = getStatement(connection, statement);
             resultSet = getResultSet(query, statement, resultSet);
-            List<Metric> metricList = getMetricsFromResultSet(query, resultSet);
-            metricWriter.transformAndPrintMetrics(metricList);
+            getMetricsFromResultSet(query, resultSet);
 
         } catch (SQLException e) {
             logger.error("Error in connecting the result. ", e);
         } finally {
 
             if (statement != null) try {
-                statement.close();
+                jdbcAdapter.closeStatement(statement);
             } catch (SQLException e) {
                 logger.error("Unable to close the Statement", e);
             }
@@ -81,17 +80,16 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         }
     }
 
-    private List<Metric> getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException {
+    private void getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException {
         String dbServerDisplayName = (String) server.get("displayName");
         String queryDisplayName = (String) query.get("displayName");
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(query);
         List<Map<String, String>> metricReplacer = getMetricReplacer();
-
         MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
-
         List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet, columns);
-        return metricList;
+        metricWriter.transformAndPrintMetrics(metricList);
+
     }
 
     private Statement getStatement(Connection connection, Statement statement) throws SQLException {

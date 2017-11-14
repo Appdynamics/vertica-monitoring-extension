@@ -68,12 +68,12 @@ public class MetricCollector {
         return list_of_metrics;
     }
 
-//    private void print(List<Metric> metrics){
-//
-//        for(Metric metric: metrics){
-//            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
-//        }
-//    }
+    private void print(List<Metric> metrics){
+
+        for(Metric metric: metrics){
+            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
+        }
+    }
 
     private String replaceCharacter(String metricPath){
 
