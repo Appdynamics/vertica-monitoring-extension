@@ -79,23 +79,20 @@ This is very essential in order to establish a connection with the Vertica DB to
 | Param | Description |
 | ----- | ----- |
 | driver | The Driver that will be used to connect to the database.   |
-| host | Vertica host  |
-| port | Vertica port. Default port is 5433 |
-| database | Database name you want to connect to |
-| user | user name |
-| password | password |
+| connectionUrl | URL that will be used to connect to the database. This includes the host and port information. |
+| user | user name used to connect to the database |
+| password | password used to connect to the database |
 | metricPrefix | Metric prefix which is shown in the controller. Default is "Custom Metrics\|Vertica\|" |
-| sysTables | System table names for which metrics has to be collected |
 
 
 ### Here is a demo config.yml file.
 ~~~~
-# Make sure the metric prefix ends with a |
+#Make sure the metric prefix ends with a |
 #This will create this metric in all the tiers, under this path.
 #metricPrefix: "Custom Metrics|SQL|"
 #This will create it in specific Tier. Replace <ComponentID> with TierID
-#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
-metricPrefix: "Custom Metrics|Vertica"
+#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Vertica|"
+metricPrefix: "Custom Metrics|Vertica|"
 
 dbServers:
     - displayName: "Vertica"
@@ -432,6 +429,10 @@ numberOfThreads: 5
             <argument name="config-file" is-required="true" default-value="monitors/Vertica-Monitor/config.yml"     />
         </task-arguments>
         <java-task>
+
+
+       <!--     <classpath>vertica-monitoring-extension.jar;jar-file-t0-connect-to-db.jar</classpath> -->
+
             <classpath>vertica-monitoring-extension.jar</classpath>
 
             <impl-class>com.appdynamics.extensions.sql.SQLMonitor</impl-class>
@@ -460,6 +461,9 @@ Metrics related to Disk Storage
 
 | Name | Description |
 | ----- | ----- |
+| Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/rank | The rank assigned to the storage location based on its performance  |
+| Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/throughput | The measure of a storage location's performance in MB/sec  |
+| Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/latency | The measure of a storage location's performance in seeks/sec  |
 | Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/disk_block_size_bytes | The block size of the disk in bytes  |
 | Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/disk_space_free_blocks | The number of free disk blocks available  |
 | Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/disk_space_free_mb | The number of megabytes of free storage available  |
@@ -472,6 +476,8 @@ Provides a snapshot of the node
 
 | Name | Description |
 | ----- | ----- |
+| Custom Metrics/Vertica/Host Resources/{HOST_NAME}/ |   |
+
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/core_file_limit_max_size_bytes | The maximum core file size allowed on the node  |
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/disk_space_free_mb | The free disk space available, in megabytes, for all storage location file systems  |
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/disk_space_total_mb | The total free disk space available, in megabytes, for all storage location file systems  |
@@ -503,7 +509,7 @@ Monitors node recovery state-change history on the system
 
 | Name | Description |
 | ----- | ----- |
-| Custom Metrics/Vertica/Node State/{NODE_NAME}/node_state | Shows the node's state. Can be one of: UP (0), READY (1), UNSAFE (2), SHUTDOWN (3), RECOVERING (4)  |
+| Custom Metrics/Vertica/Node State/{NODE_NAME}/node_state | Shows the node's state. Can be one of: INITIALIZING (0), UP (1), DOWN(2), READY (3), UNSAFE (4), SHUTDOWN (5), RECOVERING (6)  |
 
 ###Query Metrics
 Monitors the sessions and queries running on each node

@@ -18,6 +18,7 @@
         </task-arguments>
         <java-task>
             <classpath>vertica-monitoring-extension.jar;vertica-jdbc-7.0.1-0.jar</classpath>
+            <!--     <classpath>vertica-monitoring-extension.jar;jar-file-t0-connect-to-db.jar</classpath> -->
 
             <impl-class>com.appdynamics.extensions.sql.SQLMonitor</impl-class>
         </java-task>
