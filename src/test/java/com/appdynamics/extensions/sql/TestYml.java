@@ -18,15 +18,15 @@ import java.util.Map;
  */
 public class TestYml {
 
-    @Test
-    public void test() throws FileNotFoundException {
-        Yaml yaml = new Yaml();
-        File f = new File("/Users/bhuvnesh.kumar/repos/appdynamics/extensions/frb-sql-monitoring-extension/src/test/resources/conf/config1.yml");
-        Map config = yaml.loadAs(new FileInputStream(f),Map.class);
-        final ObjectMapper mapper = new ObjectMapper(); // jackson’s objectmapper
-        final Columns columns = mapper.convertValue(config, Columns.class);
-        Assert.assertTrue(columns != null);
-    }
+//    @Test
+//    public void test() throws FileNotFoundException {
+//        Yaml yaml = new Yaml();
+//        File f = new File("/src/test/resources/conf/config1.yml");
+//        Map config = yaml.loadAs(new FileInputStream(f),Map.class);
+//        final ObjectMapper mapper = new ObjectMapper(); // jackson’s objectmapper
+//        final Columns columns = mapper.convertValue(config, Columns.class);
+//        Assert.assertTrue(columns != null);
+//    }
 
 //    @Test
 //    public void testFilterMapOfStringMapsOfStringAndString() {

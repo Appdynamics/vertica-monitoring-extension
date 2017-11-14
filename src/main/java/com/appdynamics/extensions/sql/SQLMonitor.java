@@ -26,11 +26,9 @@ public class SQLMonitor extends ABaseMonitor {
     private long currentTimestamp = System.currentTimeMillis();
     private static final String CONFIG_ARG = "config-file";
 
-    //#TODO
     @Override
     protected String getDefaultMetricPrefix() {
-//        return (String) configuration.getConfigYml().get("metricPrefix");
-    return "Custom Metrics|";
+    return "Custom Metrics|Vertica";
     }
 
     @Override
@@ -128,7 +126,6 @@ public class SQLMonitor extends ABaseMonitor {
         final Map<String, String> taskArgs = new HashMap<String, String>();
 
         taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
-
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {

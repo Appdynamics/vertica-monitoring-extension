@@ -4,17 +4,33 @@ package com.appdynamics.extensions.sql;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.yml.YmlReader;
+import static org.junit.Assert.*;
 
 import static org.junit.Assert.assertTrue;
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+import org.mockito.ArgumentCaptor;
+import com.google.common.collect.Lists;
+import com.appdynamics.extensions.metrics.Metric;
 
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+
 
 import static org.mockito.Mockito.*;
 
@@ -26,47 +42,102 @@ import static org.mockito.Mockito.*;
 
 public class SQLMonitorTaskTest {
 
-    private MetricWriteHelper metricWriter = mock(MetricWriteHelper.class);
-//    private MetricPrinter metricPrinter = mock(MetricPrinter.class);
 
-    private String metricPrefix = "Server|Tibco ASG";
+    private long previousTimestamp = System.currentTimeMillis() ;
+    private long currentTimestamp = System.currentTimeMillis();
+    private String metricPrefix = "Server|Vertica";
+    private MetricWriteHelper metricWriter = mock(MetricWriteHelper.class);
+    JDBCConnectionAdapter jdbcAdapter = mock(JDBCConnectionAdapter.class);
+    private Map server;
+    private Boolean status = true;
+
     private String displayName = "FRB-Try";
     private static final String CONFIG_FILE_PARAM = "config-file";
     private MonitorConfiguration configuration;
 
-     JDBCConnectionAdapter jdbcAdapter = mock(JDBCConnectionAdapter.class);
+    @Mock
+    private ResultSet resultSet = mock(ResultSet.class);
 
-    @Test
-    public void testNotEmptyQuery(){
-        Map queries = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config_query.yml"));
-        Assert.assertTrue(queries != null);
-        Assert.assertFalse(queries.isEmpty());
+    @Before
+    public void setUp() throws  Exception{
 
-        ArrayList check1 = (ArrayList) queries.get("queries");
-        Map check2 = (Map) check1.get(0);
-        ArrayList check3 = (ArrayList) check2.get("columns");
-        Map check4 = (Map) check3.get(0);
-        String check5 = (String) check4.get("name");
+        try{
+            when(resultSet.getString("NODE_NAME")).thenReturn("v_vmart_node0001");
+            when(resultSet.getString("EVENT_ID")).thenReturn("6");
+            when(resultSet.getString("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_CODE")).thenReturn("6");
+            when(resultSet.getString("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_POSTED_COUNT")).thenReturn("1");
 
-        Assert.assertTrue( check5.equals("TRN_TARGET_OPERATION"));
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
     }
+
+//    @Test
+//    public void testNotEmptyQuery(){
+//        Map queries = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config_query.yml"));
+//        Assert.assertTrue(queries != null);
+//        Assert.assertFalse(queries.isEmpty());
+//
+//        ArrayList check1 = (ArrayList) queries.get("queries");
+//        Map check2 = (Map) check1.get(0);
+//        ArrayList check3 = (ArrayList) check2.get("columns");
+//        Map check4 = (Map) check3.get(0);
+//        String check5 = (String) check4.get("name");
+//
+//        Assert.assertTrue( check5.equals("TRN_TARGET_OPERATION"));
+//    }
 
     @Test
     public void testGetConnection() throws SQLException, ClassNotFoundException {
+        ArgumentCaptor<List> pathCaptor = ArgumentCaptor.forClass(List.class);
 
-        Map server = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config.yml"));
+        Map servers_yaml = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config1.yml"));
+        List<Map<String, String>> servers = (List<Map<String, String>>) servers_yaml.get("dbServers");
 
+        Map server = servers.get(0);
+        currentTimestamp = System.currentTimeMillis();
         Connection connection= mock(Connection.class);
         when(jdbcAdapter.open((String)server.get("driver"))).thenReturn(connection);
 
+        SQLMonitorTask sqlMonitorTask = new SQLMonitorTask.Builder().metricWriter(metricWriter)
+                .metricPrefix("Custom Metrics|AVertica1|Bh5")
+                .jdbcAdapter(jdbcAdapter)
+                .previousTimestamp(previousTimestamp)
+                .currentTimestamp(currentTimestamp)
+                .server(server).build();
+        Statement statement = connection.createStatement();
+
+        ResultSet resultSet = mock(ResultSet.class);
+
+        when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
+
+        try{
+            when(resultSet.getString("NODE_NAME")).thenReturn("v_vmart_node0001");
+            when(resultSet.getString("EVENT_ID")).thenReturn("6");
+            when(resultSet.getString("EVENT_CODE")).thenReturn("6");
+            when(resultSet.getString("EVENT_POSTED_COUNT")).thenReturn("1");
+
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+        when(jdbcAdapter.queryDatabase("Select NODE_NAME, EVENT_CODE, EVENT_ID, EVENT_POSTED_COUNT from Active_events",statement )).thenReturn(resultSet);
+
+        sqlMonitorTask.run();
+        verify(metricWriter).transformAndPrintMetrics(pathCaptor.capture());
+        List<String> metricPathsList = Lists.newArrayList();
+        metricPathsList.add("Custom Metrics|AVertica1|Bh5|Vertica|Active Events|v_vmart_node0001|6|EVENT_CODE");
+        metricPathsList.add("Custom Metrics|AVertica1|Bh5|Vertica|Active Events|v_vmart_node0001|6|EVENT_POSTED_COUNT");
+
+        for (Metric metric : (List<Metric>)pathCaptor.getValue()){
+            org.junit.Assert.assertTrue(metricPathsList.contains(metric.getMetricPath()));
+        }
+
     }
 
-    @Test
-    public void testRunFunctionality(){
-        Map file = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config_query.yml"));
-        ArrayList queries = (ArrayList) file.get("queries");
 
 
-    }
+
 
 }
