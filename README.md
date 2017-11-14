@@ -1,12 +1,12 @@
 # Vertica Monitoring Extension
 
-##Use Case
+## Use Case
 
 The Vertica Monitoring Extension collects the stats by querying Vertica DB system tables and reports them to the AppDynamics Controller.
 
 This extension works only with the standalone machine agent.
 
-##Prerequisite
+## Prerequisite
 Vertica JDBC library is NOT in maven repo. You will have to add the vertica jdbc jar file in order to get this extension to work.
 Once you have the jar file, place it in the monitors/Vertica-Monitor/ folder and update the classpath for the jar file as follows.
 Open the Monitor.xml file and update the classpath:
@@ -14,16 +14,8 @@ Open the Monitor.xml file and update the classpath:
 
 This is very essential in order to establish a connection with the Vertica DB to get the metrics.
 
-################################# To Remove ##################################
 
-To get it using maven we have to install the library in the local maven repo. JDBC library with version 7.0.1-0 is checked in to the lib folder. Use the below maven command to install the library to local maven repo.
-
-mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -DartifactId=vertica-jdbc -Dversion=7.0.1-0 -Dpackaging=jar
-
-##############################################################################
-
-
-##Installing Vertica
+## Installing Vertica
 
 1. Download the HP Vertica server package.
 2. Login as root
@@ -44,7 +36,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
    To create an example database please visit: [Installing and Connecting to the VMart Example Database](https://my.vertica.com/docs/7.0.x/HTML/index.htm#Authoring/GettingStartedGuide/InstallingAndConnectingToVMart/InstallingandConnecting.htm%3FTocPath%3DGetting%20Started%20Guide%7CInstalling%20and%20Connecting%20to%20the%20VMart%20Example%20Database%7C_____0)
 
 
-##Installation
+## Installation
 1. Run 'mvn clean install' from the vertica-monitoring-extension directory
 2. Download the file Vertica-Monitor.zip found in the 'target' directory into /<machineagent install dir/>/monitors/
 3. Unzip the downloaded file and cd into VerticaMonitor
@@ -53,7 +45,7 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 6. In the AppDynamics controller, look for events in Custom Metrics|Vertica|
 
 
-##Directory Structure
+## Directory Structure
 
 <table><tbody>
 <tr>
@@ -98,20 +90,38 @@ mvn install:install-file -Dfile={path to JDBC library} -DgroupId=com.vertica -Da
 
 ### Here is a demo config.yml file.
 ~~~~
+# Make sure the metric prefix ends with a |
+#This will create this metric in all the tiers, under this path.
+#metricPrefix: "Custom Metrics|SQL|"
+#This will create it in specific Tier. Replace <ComponentID> with TierID
+#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
+metricPrefix: "Custom Metrics|Vertica"
 
 dbServers:
     - displayName: "Vertica"
-#      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart;"
-
+      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart"
       driver: "com.vertica.jdbc.Driver"
-      host: "192.168.57.102"
-      port: 5433
-      database: "VMart"
-      user: "dbadmin"
-      password: "password"
+
+      connectionProperties:
+        - user: "dbadmin"
+        - password: "password"
 
       #Needs to be used in conjunction with `encryptionKey`. Please read the extension documentation to generate encrypted password
       #encryptedPassword: ""
+
+      #Needs to be used in conjunction with `encryptedPassword`. Please read the extension documentation to generate encrypted password
+      #encryptionKey: "welcome"
+
+      # Replaces characters in metric name with the specified characters.
+      # "replace" takes any regular expression
+      # "replaceWith" takes the string to replace the matched characters
+
+      metricCharacterReplacer:
+        - replace: "%"
+          replaceWith: ""
+        - replace: ","
+          replaceWith: "-"
+
 
       queries:
         - displayName: "Active Events"
@@ -219,7 +229,6 @@ dbServers:
             - name: "DISK_SPACE_TOTAL_MB"
               type: "metricValue"
 
-
         - displayName: "IO Usage"
           queryStmt: "Select NODE_NAME, READ_KBYTES_PER_SEC, WRITTEN_KBYTES_PER_SEC from IO_USAGE"
           columns:
@@ -240,10 +249,18 @@ dbServers:
 
             - name: "NODE_STATE"
               type: "metricValue"
+              properties:
+                convert:
+                  "INITIALIZING" : 0
+                  "UP" : 1
+                  "DOWN" : 2
+                  "READY" : 3
+                  "UNSAFE" : 4
+                  "SHUTDOWN" : 5
+                  "RECOVERING" : 6
 
         - displayName: "Query Metrics"
           queryStmt: "Select NODE_NAME, ACTIVE_USER_SESSION_COUNT, ACTIVE_SYSTEM_SESSION_COUNT, TOTAL_USER_SESSION_COUNT, TOTAL_SYSTEM_SESSION_COUNT, TOTAL_ACTIVE_SESSION_COUNT, TOTAL_SESSION_COUNT, RUNNING_QUERY_COUNT, EXECUTED_QUERY_COUNT  from QUERY_METRICS "
-
           columns:
             - name: "NODE_NAME"
               type: "metricPathName"
@@ -271,7 +288,6 @@ dbServers:
 
             - name: "EXECUTED_QUERY_COUNT"
               type: "metricValue"
-
 
         - displayName: "Resource Usage"
           queryStmt: "SELECT NODE_NAME, REQUEST_COUNT, LOCAL_REQUEST_COUNT, ACTIVE_THREAD_COUNT, OPEN_FILE_HANDLE_COUNT, MEMORY_REQUESTED_KB, ADDRESS_SPACE_REQUESTED_KB, WOS_USED_BYTES, WOS_ROW_COUNT, ROS_USED_BYTES, ROS_ROW_COUNT, TOTAL_ROW_COUNT, TOTAL_USED_BYTES, TOKENS_USED FROM RESOURCE_USAGE "
@@ -317,7 +333,6 @@ dbServers:
 
             - name: "TOKENS_USED"
               type: "metricValue"
-
 
         - displayName: "System Resource Usage"
           queryStmt: "SELECT NODE_NAME, AVERAGE_MEMORY_USAGE_PERCENT, AVERAGE_CPU_USAGE_PERCENT, NET_RX_KBYTES_PER_SECOND, NET_TX_KBYTES_PER_SECOND, IO_READ_KBYTES_PER_SECOND, IO_WRITTEN_KBYTES_PER_SECOND FROM SYSTEM_RESOURCE_USAGE"
@@ -394,16 +409,6 @@ dbServers:
 
 numberOfThreads: 5
 
-#Needs to be used in conjunction with `encryptedPassword`. Please read the extension documentation to generate encrypted password
-#encryptionKey: "welcome"
-
-
-# Make sure the metric prefix ends with a |
-#This will create this metric in all the tiers, under this path.
-#metricPrefix: "Custom Metrics|Vertica|"
-#This will create it in specific Tier. Replace <ComponentID> with TierID
-#metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Vertica|"
-metricPrefix: "Custom Metrics|Vertica|"
 ~~~~
 
 ###  monitor.xml

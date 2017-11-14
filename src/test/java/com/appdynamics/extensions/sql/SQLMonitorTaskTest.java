@@ -50,27 +50,9 @@ public class SQLMonitorTaskTest {
     JDBCConnectionAdapter jdbcAdapter = mock(JDBCConnectionAdapter.class);
     private Map server;
 
-    @Mock
-    private ResultSet resultSet = mock(ResultSet.class);
-
-    @Before
-    public void setUp() throws  Exception{
-
-        try{
-            when(resultSet.getString("NODE_NAME")).thenReturn("v_vmart_node0001");
-            when(resultSet.getString("EVENT_ID")).thenReturn("6");
-            when(resultSet.getString("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_CODE")).thenReturn("6");
-            when(resultSet.getString("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_POSTED_COUNT")).thenReturn("1");
-
-        } catch (Exception e){
-            System.out.println(e);
-        }
-
-    }
-
 
     @Test
-    public void testGetConnection() throws SQLException, ClassNotFoundException {
+    public void testRunFunctionality() throws SQLException, ClassNotFoundException {
         ArgumentCaptor<List> pathCaptor = ArgumentCaptor.forClass(List.class);
 
         Map servers_yaml = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config1.yml"));
