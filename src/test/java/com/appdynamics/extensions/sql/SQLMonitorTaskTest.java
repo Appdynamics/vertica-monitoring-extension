@@ -45,15 +45,10 @@ public class SQLMonitorTaskTest {
 
     private long previousTimestamp = System.currentTimeMillis() ;
     private long currentTimestamp = System.currentTimeMillis();
-    private String metricPrefix = "Server|Vertica";
+    private String metricPrefix = "Custom Metrics";
     private MetricWriteHelper metricWriter = mock(MetricWriteHelper.class);
     JDBCConnectionAdapter jdbcAdapter = mock(JDBCConnectionAdapter.class);
     private Map server;
-    private Boolean status = true;
-
-    private String displayName = "FRB-Try";
-    private static final String CONFIG_FILE_PARAM = "config-file";
-    private MonitorConfiguration configuration;
 
     @Mock
     private ResultSet resultSet = mock(ResultSet.class);
@@ -73,20 +68,6 @@ public class SQLMonitorTaskTest {
 
     }
 
-//    @Test
-//    public void testNotEmptyQuery(){
-//        Map queries = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config_query.yml"));
-//        Assert.assertTrue(queries != null);
-//        Assert.assertFalse(queries.isEmpty());
-//
-//        ArrayList check1 = (ArrayList) queries.get("queries");
-//        Map check2 = (Map) check1.get(0);
-//        ArrayList check3 = (ArrayList) check2.get("columns");
-//        Map check4 = (Map) check3.get(0);
-//        String check5 = (String) check4.get("name");
-//
-//        Assert.assertTrue( check5.equals("TRN_TARGET_OPERATION"));
-//    }
 
     @Test
     public void testGetConnection() throws SQLException, ClassNotFoundException {
@@ -95,13 +76,13 @@ public class SQLMonitorTaskTest {
         Map servers_yaml = YmlReader.readFromFileAsMap(new File("src/test/resources/conf/config1.yml"));
         List<Map<String, String>> servers = (List<Map<String, String>>) servers_yaml.get("dbServers");
 
-        Map server = servers.get(0);
+         server = servers.get(0);
         currentTimestamp = System.currentTimeMillis();
         Connection connection= mock(Connection.class);
         when(jdbcAdapter.open((String)server.get("driver"))).thenReturn(connection);
 
         SQLMonitorTask sqlMonitorTask = new SQLMonitorTask.Builder().metricWriter(metricWriter)
-                .metricPrefix("Custom Metrics|AVertica1|Bh5")
+                .metricPrefix(metricPrefix)
                 .jdbcAdapter(jdbcAdapter)
                 .previousTimestamp(previousTimestamp)
                 .currentTimestamp(currentTimestamp)
@@ -112,23 +93,18 @@ public class SQLMonitorTaskTest {
 
         when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
 
-        try{
-            when(resultSet.getString("NODE_NAME")).thenReturn("v_vmart_node0001");
-            when(resultSet.getString("EVENT_ID")).thenReturn("6");
-            when(resultSet.getString("EVENT_CODE")).thenReturn("6");
-            when(resultSet.getString("EVENT_POSTED_COUNT")).thenReturn("1");
-
-        } catch (Exception e){
-            System.out.println(e);
-        }
+        when(resultSet.getString("NODE_NAME")).thenReturn("v_vmart_node0001");
+        when(resultSet.getString("EVENT_ID")).thenReturn("6");
+        when(resultSet.getString("EVENT_CODE")).thenReturn("6");
+        when(resultSet.getString("EVENT_POSTED_COUNT")).thenReturn("1");
 
         when(jdbcAdapter.queryDatabase("Select NODE_NAME, EVENT_CODE, EVENT_ID, EVENT_POSTED_COUNT from Active_events",statement )).thenReturn(resultSet);
 
         sqlMonitorTask.run();
         verify(metricWriter).transformAndPrintMetrics(pathCaptor.capture());
         List<String> metricPathsList = Lists.newArrayList();
-        metricPathsList.add("Custom Metrics|AVertica1|Bh5|Vertica|Active Events|v_vmart_node0001|6|EVENT_CODE");
-        metricPathsList.add("Custom Metrics|AVertica1|Bh5|Vertica|Active Events|v_vmart_node0001|6|EVENT_POSTED_COUNT");
+        metricPathsList.add("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_CODE");
+        metricPathsList.add("Custom Metrics|Vertica|Active Events|v_vmart_node0001|6|EVENT_POSTED_COUNT");
 
         for (Metric metric : (List<Metric>)pathCaptor.getValue()){
             org.junit.Assert.assertTrue(metricPathsList.contains(metric.getMetricPath()));
