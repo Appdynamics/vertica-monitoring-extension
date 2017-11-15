@@ -73,7 +73,7 @@ This is very essential in order to establish a connection with the Vertica DB to
 
 ## Config files
 
-###  config.yml
+### config.yml
 
 
 | Param | Description |
@@ -443,12 +443,12 @@ numberOfThreads: 5
 
 ~~~~
 
-##Metrics
+## Metrics
 
 Metrics are collected by querying system tables of Vertica.
 For the complete list of system tables please visit [Vertica System Tables](https://my.vertica.com/docs/7.0.x/HTML/index.htm#Authoring/SQLReferenceManual/SystemTables/MONITOR/V_MONITORSchema.htm%3FTocPath%3DSQL%20Reference%20Manual%7CHP%20Vertica%20System%20Tables%7CV_MONITOR%20Schema%7C_____0)
 
-###Active Events
+### Active Events
 Metrics related to Active Events
 
 | Name | Description |
@@ -456,7 +456,7 @@ Metrics related to Active Events
 | Custom Metrics/Vertica/Active Events/{NODE_NAME}/{EVENT_ID}/event_code | A numeric ID that indicates the type of event  |
 | Custom Metrics|Vertica/Active Events/{NODE_NAME}/{EVENT_ID}/event_posted_count | Tracks the number of times an event occurs  |
 
-###Disk Storage
+### Disk Storage
 Metrics related to Disk Storage
 
 | Name | Description |
@@ -471,13 +471,11 @@ Metrics related to Disk Storage
 | Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/disk_space_used_blocks | The number of disk blocks in use  |
 | Custom Metrics/Vertica/Disk Storage/{NODE_NAME}/{STORAGE_USAGE}/disk_space_used_mb | The number of megabytes of disk storage in use  |
 
-###Host Resources
+### Host Resources
 Provides a snapshot of the node
 
 | Name | Description |
 | ----- | ----- |
-| Custom Metrics/Vertica/Host Resources/{HOST_NAME}/ |   |
-
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/core_file_limit_max_size_bytes | The maximum core file size allowed on the node  |
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/disk_space_free_mb | The free disk space available, in megabytes, for all storage location file systems  |
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/disk_space_total_mb | The total free disk space available, in megabytes, for all storage location file systems  |
@@ -496,7 +494,7 @@ Provides a snapshot of the node
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/total_swap_memory_bytes | The total amount of swap memory available, in bytes, on the system  |
 | Custom Metrics/Vertica/Host Resources/{HOST_NAME}/total_swap_free_memory_bytes | The total amount of swap memory free, in bytes, on the system  |
 
-###IO Usage
+### IO Usage
 Provides a snapshot of the node
 
 | Name | Description |
@@ -504,14 +502,14 @@ Provides a snapshot of the node
 | Custom Metrics/Vertica/IO Usage/{NODE_NAME}/read_kbytes_per_sec | Counter history of the number of bytes read measured in kilobytes per second  |
 | Custom Metrics/Vertica/IO Usage/{NODE_NAME}/written_kbytes_per_sec | Counter history of the number of bytes written measured in kilobytes per second  |
 
-###Node State
+### Node State
 Monitors node recovery state-change history on the system
 
 | Name | Description |
 | ----- | ----- |
 | Custom Metrics/Vertica/Node State/{NODE_NAME}/node_state | Shows the node's state. Can be one of: INITIALIZING (0), UP (1), DOWN(2), READY (3), UNSAFE (4), SHUTDOWN (5), RECOVERING (6)  |
 
-###Query Metrics
+### Query Metrics
 Monitors the sessions and queries running on each node
 
 | Name | Description |
@@ -525,7 +523,7 @@ Monitors the sessions and queries running on each node
 | Custom Metrics/Vertica/Query Metrics/{NODE_NAME}/total_system_session_count | The number of active system sessions |
 | Custom Metrics/Vertica/Query Metrics/{NODE_NAME}/total_user_session_count | The total number of user sessions |
 
-###Resource Usage
+### Resource Usage
 Monitors system resource management on each node
 
 | Name | Description |
@@ -543,7 +541,7 @@ Monitors system resource management on each node
 | Custom Metrics/Vertica/Resource Usage/{NODE_NAME}/wos_row_count | The number of rows in the WOS |
 | Custom Metrics/Vertica/Resource Usage/{NODE_NAME}/wos_used_bytes | The size of the WOS in bytes |
 
-###System
+### System
 Monitors the overall state of the database
 
 | Name | Description |
@@ -552,8 +550,20 @@ Monitors the overall state of the database
 | Custom Metrics/Vertica/System/designed_fault_tolerance | The designed or intended K-safety level |
 | Custom Metrics/Vertica/System/node_count | The number of nodes in the cluster  |
 | Custom Metrics/Vertica/System/node_down_count | The number of nodes in the cluster that are currently down |
+| Custom Metrics/Vertica/System/current_epoch | The current epoch number  |
+| Custom Metrics/Vertica/System/ahm_epoch | The AHM epoch number  |
+| Custom Metrics/Vertica/System/last_good_epoch | The smallest (min) of all the checkpoint epochs on the cluster  |
+| Custom Metrics/Vertica/System/refresh_epoch | Deprecated, always set to -1  |
+| Custom Metrics/Vertica/System/catalog_revision_number | The catalog version number  |
+| Custom Metrics/Vertica/System/wos_used_bytes | The WOS size in bytes (cluster-wide)  |
+| Custom Metrics/Vertica/System/ros_used_bytes | The ROS size in bytes (cluster-wide)  |
+| Custom Metrics/Vertica/System/wos_row_count | The number of rows in WOS (cluster-wide)  |
+| Custom Metrics/Vertica/System/ros_row_count | The number of rows in ROS (cluster-wide)  |
+| Custom Metrics/Vertica/System/total_used_bytes | The total storage in bytes (WOS + ROS) (cluster-wide)  |
+| Custom Metrics/Vertica/System/total_row_count | The total number of rows (WOS + ROS) (cluster-wide)  |
 
-###System Resource Usage
+
+### System Resource Usage
 Provides history about system resources, such as memory, CPU, network, disk, I/O
 
 | Name | Description |
@@ -570,14 +580,14 @@ Provides history about system resources, such as memory, CPU, network, disk, I/O
 ## Custom Dashboard ##
 ![](https://github.com/Appdynamics/vertica-monitoring-extension/raw/master/vertica_dashboard.png)
 
-##Contributing
+## Contributing
 
 Always feel free to fork and contribute any changes directly here on GitHub
 
-##Community
+## Community
 
-Find out more in the [AppSphere](http://community.appdynamics.com/t5/AppDynamics-eXchange/Vertica-Monitoring-Extension/idi-p/8802) community.
+Find out more in the [AppSphere](https://www.appdynamics.com/community/exchange/extension/vertica-monitoring-extension/) community.
 
-##Support
+## Support
 
 For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
