@@ -575,6 +575,39 @@ Provides history about system resources, such as memory, CPU, network, disk, I/O
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_rx_kbytes_per_second | Average number of kilobytes received from network (incoming) per second during the history interval |
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_tx_kbytes_per_second | Average number of kilobytes transmitting to network (outgoing) per second during the history interval |
 
+## Password Encryption Support ## 
+
+To avoid setting the clear text password in the config.yml, please follow the process to encrypt the password and set the encrypted password and the encryptionKey in the config.yml
+
+1. To encrypt password from the commandline go to/monitors/Vertica-Monitor directory and run the below command.
+
+~~~~
+java -cp "cassandra-monitoring-extension.jar" com.appdynamics.extensions.crypto.Encryptor myKey myPassword
+
+~~~~
+
+## Workbench ##
+
+Workbench is a feature by which you can preview the metrics before registering it with the controller. This is useful if you want to fine tune the configurations. Workbench is embedded into the extension jar.
+To use the workbench:
+1. Follow all the installation steps
+2. Start the workbench with the command: 
+
+~~~~
+  java -jar /monitors/Vertica-Monitor/vertica-monitoring-extension.jar
+
+~~~~
+3. This starts an http server at http://host:9090/. This can be accessed from the browser.
+4. If the server is not accessible from outside/browser, you can use the following end points to see the list of registered metrics and errors.
+~~~~
+    # Get the stats
+    curl http://localhost:9090/api/stats
+    # Get the registered metrics
+    curl http://localhost:9090/api/metric-paths
+
+~~~~
+5. You can make the changes to config.yml and validate it from the browser or the API
+6. Once the configuration is complete, you can kill the workbench and start the Machine Agent.
 
 
 ## Custom Dashboard ##
