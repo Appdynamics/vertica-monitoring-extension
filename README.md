@@ -454,7 +454,7 @@ Metrics related to Active Events
 | Name | Description |
 | ----- | ----- |
 | Custom Metrics/Vertica/Active Events/{NODE_NAME}/{EVENT_ID}/event_code | A numeric ID that indicates the type of event  |
-| Custom Metrics|Vertica/Active Events/{NODE_NAME}/{EVENT_ID}/event_posted_count | Tracks the number of times an event occurs  |
+| Custom Metrics/Vertica/Active Events/{NODE_NAME}/{EVENT_ID}/event_posted_count | Tracks the number of times an event occurs  |
 
 ### Disk Storage
 Metrics related to Disk Storage
