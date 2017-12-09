@@ -575,16 +575,10 @@ Provides history about system resources, such as memory, CPU, network, disk, I/O
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_rx_kbytes_per_second | Average number of kilobytes received from network (incoming) per second during the history interval |
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_tx_kbytes_per_second | Average number of kilobytes transmitting to network (outgoing) per second during the history interval |
 
-## Password Encryption Support ## 
+## Credentials Encryption ##
 
-To avoid setting the clear text password in the config.yml, please follow the process to encrypt the password and set the encrypted password and the encryptionKey in the config.yml
+Please visit [this page ](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-Password-Encryption-with-Extensions/ta-p/29397)to get detailed instructions on password encryption. The steps in this document will guide you through the whole process.
 
-1. To encrypt password from the commandline go to/monitors/Vertica-Monitor directory and run the below command.
-
-~~~~
-java -cp "cassandra-monitoring-extension.jar" com.appdynamics.extensions.crypto.Encryptor myKey myPassword
-
-~~~~
 
 ## Workbench ##
 
