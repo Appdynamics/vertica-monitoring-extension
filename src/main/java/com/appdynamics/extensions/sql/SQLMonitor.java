@@ -6,15 +6,13 @@ import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.crypto.CryptoUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
 
@@ -60,7 +58,6 @@ public class SQLMonitor extends ABaseMonitor {
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
         return servers.size();
     }
-
 
 
     private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {

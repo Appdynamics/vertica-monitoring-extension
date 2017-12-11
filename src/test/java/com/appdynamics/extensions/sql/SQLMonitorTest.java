@@ -40,18 +40,4 @@ public class SQLMonitorTest {
 
     }
 
-//    @Test(expected = TaskExecutionException.class)
-//    public void testWithNullArgsShouldResultInException() throws Exception {
-//        testClass.execute(null, null);
-//
-//    }
-//
-//    @Test(expected = TaskExecutionException.class)
-//    public void testWithNoValidLogConfigResultInException() throws Exception {
-//        Map<String, String> args = Maps.newHashMap();
-//        args.put("config-file", "src/test/resources/conf/invalidConfig.yml");
-//
-//        testClass.execute(args, null);
-//    }
-
 }
