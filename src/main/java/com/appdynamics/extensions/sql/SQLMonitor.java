@@ -46,7 +46,7 @@ public class SQLMonitor extends ABaseMonitor {
     protected void doRun(TasksExecutionServiceProvider serviceProvider) {
 
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
-
+//
         previousTimestamp = currentTimestamp;
         currentTimestamp = System.currentTimeMillis();
         if (previousTimestamp != 0) {
