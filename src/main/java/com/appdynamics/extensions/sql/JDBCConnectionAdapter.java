@@ -21,7 +21,7 @@ public class JDBCConnectionAdapter {
 
     private final String connUrl;
     private final Map<String, String> connectionProperties;
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JDBCConnectionAdapter.class);
 
 
     private JDBCConnectionAdapter(String connStr, Map<String, String> connectionProperties) {
@@ -47,11 +47,9 @@ public class JDBCConnectionAdapter {
         }
 
         logger.debug("Passed all checks for properties and attempting to connect to: "+ connUrl);
-         long timestamp1 = System.currentTimeMillis();
-
+        long timestamp1 = System.currentTimeMillis();
         connection = DriverManager.getConnection(connUrl, properties);
         long timestamp2 = System.currentTimeMillis();
-
         logger.debug("Connection received in JDBC ConnectionAdapter in :"+ (timestamp2-timestamp1)+ " ms");
         return connection;
     }
