@@ -10,6 +10,7 @@ package com.appdynamics.extensions.sql;
 
 
 import com.google.common.base.Strings;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class JDBCConnectionAdapter {
 
     private final String connUrl;
     private final Map<String, String> connectionProperties;
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SQLMonitorTask.class);
 
 
     private JDBCConnectionAdapter(String connStr, Map<String, String> connectionProperties) {
@@ -44,13 +46,19 @@ public class JDBCConnectionAdapter {
                 properties.put(key, connectionProperties.get(key));
         }
 
+        logger.debug("Passed all checks for properties and attempting to connect to: "+ connUrl);
+         long timestamp1 = System.currentTimeMillis();
 
         connection = DriverManager.getConnection(connUrl, properties);
+        long timestamp2 = System.currentTimeMillis();
+
+        logger.debug("Connection received in JDBC ConnectionAdapter in :"+ (timestamp2-timestamp1)+ " ms");
         return connection;
     }
 
     ResultSet queryDatabase(String query, Statement stmt) throws SQLException {
         return stmt.executeQuery(query);
+
     }
 
     void closeStatement(Statement statement) throws SQLException {

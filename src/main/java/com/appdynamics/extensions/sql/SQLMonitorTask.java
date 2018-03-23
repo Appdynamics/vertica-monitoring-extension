@@ -37,7 +37,11 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         Connection connection = null;
         if (queries != null && !queries.isEmpty()) {
             try {
+
+                long timestamp1 = System.currentTimeMillis();
                 connection = getConnection();
+                long timestamp2 = System.currentTimeMillis();
+                logger.debug("Time taken to get Connection: " + (timestamp2 - timestamp1));
                 String dbServerDisplayName = (String) server.get("displayName");
 
                 if(connection != null){
@@ -120,8 +124,12 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException {
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
-
+        long timestamp1 = System.currentTimeMillis();
         resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
+        long timestamp2 = System.currentTimeMillis();
+
+        logger.debug("Queried the database in :"+ (timestamp2-timestamp1)+ " ms for query: \n " +  queryStmt);
+
         return resultSet;
     }
 

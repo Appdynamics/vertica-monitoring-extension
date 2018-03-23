@@ -16,6 +16,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.appdynamics.extensions.util.AssertUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -46,7 +47,6 @@ public class SQLMonitor extends ABaseMonitor {
     protected void doRun(TasksExecutionServiceProvider serviceProvider) {
 
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
-//
         previousTimestamp = currentTimestamp;
         currentTimestamp = System.currentTimeMillis();
         if (previousTimestamp != 0) {
@@ -70,6 +70,11 @@ public class SQLMonitor extends ABaseMonitor {
 
     private SQLMonitorTask createTask(Map server, TasksExecutionServiceProvider serviceProvider) throws IOException {
         String connUrl = createConnectionUrl(server);
+
+        AssertUtils.assertNotNull(serverName(server), "The 'displayName' field under the 'dbServers' section in config.yml is not initialised");
+        AssertUtils.assertNotNull(createConnectionUrl(server), "The 'connectionUrl' field under the 'dbServers' section in config.yml is not initialised");
+        AssertUtils.assertNotNull(driverName(server), "The 'driver' field under the 'dbServers' section in config.yml is not initialised");
+
         Map<String, String> connectionProperties = getConnectionProperties(server);
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
@@ -82,6 +87,17 @@ public class SQLMonitor extends ABaseMonitor {
                 .server(server).build();
 
     }
+
+    private String serverName(Map server) {
+        String name = Util.convertToString(server.get("displayName"), "");
+        return name;
+    }
+
+    private String driverName(Map server) {
+        String name = Util.convertToString(server.get("driver"), "");
+        return name;
+    }
+
 
     private String createConnectionUrl(Map server) {
         String url = Util.convertToString(server.get("connectionUrl"), "");
