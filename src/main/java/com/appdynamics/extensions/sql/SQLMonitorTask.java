@@ -38,13 +38,23 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         if (queries != null && !queries.isEmpty()) {
             try {
                 connection = getConnection();
-                for (Map query : queries) {
-                    try {
-                        executeQuery(connection, query);
-                    } catch (SQLException e) {
-                        logger.error("Error during executing query.");
+                String dbServerDisplayName = (String) server.get("displayName");
+
+                if(connection != null){
+                    logger.debug(" Connection successful for server: " + dbServerDisplayName);
+
+                    for (Map query : queries) {
+                        try {
+                            executeQuery(connection, query);
+                        } catch (SQLException e) {
+                            logger.error("Error during executing query.");
+                        }
                     }
+                } else {
+
+                    logger.debug("Null Connection returned for server: " + dbServerDisplayName);
                 }
+
             } catch (SQLException e) {
                 logger.error("Error Opening connection", e);
                 status = false;
