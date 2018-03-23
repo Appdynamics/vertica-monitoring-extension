@@ -53,7 +53,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 status = false;
             } finally {
                 try {
-                    closeConnection(connection);
+                    if (connection != null) {
+                        closeConnection(connection);
+                    }
                 } catch (Exception e) {
                     logger.error("Issue closing the connection", e);
                 }
