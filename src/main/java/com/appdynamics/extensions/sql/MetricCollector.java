@@ -34,6 +34,9 @@ public class MetricCollector {
         this.metricReplacer = metricReplacer;
     }
 
+
+    //#TODO this method should return a Map<String,Metric> as the resultset could contain millions of rows each pointing to duplicate metric paths.
+    //#TODO Document that metricPathName(s) should precede metricPathValue(s)
     public List<Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
         List<Metric> list_of_metrics = new ArrayList<Metric>();
         while (resultSet != null && resultSet.next()) {
@@ -42,6 +45,7 @@ public class MetricCollector {
             metricPath = getMetricPrefix(dbServerDisplayName, queryDisplayName);
             for (Column c : columns) {
                 if (c.getType().equals("metricPathName")) {
+                    //TODO check what's going on
                     if (metricPathAlreadyAdded == false) {
                         metricPath += METRIC_SEPARATOR + resultSet.getString(c.getName());
                         metricPathAlreadyAdded = true;
