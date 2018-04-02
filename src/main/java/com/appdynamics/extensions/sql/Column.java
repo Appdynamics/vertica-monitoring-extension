@@ -22,7 +22,7 @@ public class Column {
     private String clusterRollupType = MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL;
     private Map properties;
 
-    //
+
     public Map convert;
 
     //
