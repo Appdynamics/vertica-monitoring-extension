@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,10 +112,30 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         List<Column> columns = columnGenerator.getColumns(query);
         List<Map<String, String>> metricReplacer = getMetricReplacer();
         MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
-        List<Metric> metricList = metricCollector.goingThroughResultSet(resultSet, columns);
+        Map<String, Metric> metricMap = metricCollector.goingThroughResultSet(resultSet, columns);
+        List<Metric> metricList = getListMetrics(metricMap);
         metricWriter.transformAndPrintMetrics(metricList);
 
     }
+
+    private List<Metric>  getListMetrics(Map<String, Metric> metricMap){
+        List<Metric> metricList = new ArrayList<Metric>();
+        for(String path: metricMap.keySet()){
+            Metric t = metricMap.get(path);
+            metricList.add(metricMap.get(path));
+        }
+        printList(metricList);
+        return metricList;
+
+    }
+
+    private void printList(List<Metric> metrics) {
+        System.out.println("Printing ");
+        for (Metric metric : metrics) {
+            System.out.println(metric.getMetricPath() + " !!! " + metric.getMetricValue());
+        }
+    }
+
 
     private Statement getStatement(Connection connection, Statement statement) throws SQLException {
         statement = connection.createStatement();

@@ -13,6 +13,7 @@ import com.appdynamics.extensions.metrics.Metric;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,23 +36,18 @@ public class MetricCollector {
     }
 
 
-    //#TODO this method should return a Map<String,Metric> as the resultset could contain millions of rows each pointing to duplicate metric paths.
-    //#TODO Document that metricPathName(s) should precede metricPathValue(s)
-    public List<Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
+    public Map<String, Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
         List<Metric> list_of_metrics = new ArrayList<Metric>();
+        Map<String, Metric> mapOfMetrics = new HashMap<String, Metric>();
+
         while (resultSet != null && resultSet.next()) {
             String metricPath = "";
-            boolean metricPathAlreadyAdded = false;
             metricPath = getMetricPrefix(dbServerDisplayName, queryDisplayName);
             for (Column c : columns) {
                 if (c.getType().equals("metricPathName")) {
-                    //TODO check what's going on
-                    if (metricPathAlreadyAdded == false) {
-                        metricPath += METRIC_SEPARATOR + resultSet.getString(c.getName());
-                        metricPathAlreadyAdded = true;
-                    } else {
-                        metricPath += METRIC_SEPARATOR + resultSet.getString(c.getName());
-                    }
+                    metricPath += METRIC_SEPARATOR + resultSet.getString(c.getName());
+
+
                 } else if (c.getType().equals("metricValue")) {
                     String updatedMetricPath = metricPath + METRIC_SEPARATOR + c.getName();
                     String val = resultSet.getString(c.getName());
@@ -66,22 +62,31 @@ public class MetricCollector {
                             current_metric = new Metric(c.getName(), val, updatedMetricPath);
                         }
                         list_of_metrics.add(current_metric);
-
+                        mapOfMetrics.put(updatedMetricPath,current_metric);
                     }
                 }
             }
         }
 
-//        print(list_of_metrics);
-        return list_of_metrics;
+//        printList(list_of_metrics);
+//        printMap(mapOfMetrics);
+//        return list_of_metrics;
+        return mapOfMetrics;
     }
 
-    private void print(List<Metric> metrics) {
-
-        for (Metric metric : metrics) {
-            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
-        }
-    }
+//    private void printMap(Map<String, Metric> metrics) {
+//
+//        for ( String metricPath : metrics.keySet()) {
+//            System.out.println(metricPath + " -> " + metrics.get(metricPath).getMetricValue());
+//        }
+//    }
+//
+//    private void printList(List<Metric> metrics) {
+//
+//        for (Metric metric : metrics) {
+//            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
+//        }
+//    }
 
     private String replaceCharacter(String metricPath) {
 
