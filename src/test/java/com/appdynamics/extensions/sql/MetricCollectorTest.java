@@ -60,7 +60,6 @@ public class MetricCollectorTest {
 
         mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
         for (String path : mapOfMetrics.keySet()) {
-            Metric t = mapOfMetrics.get(path);
             list_of_metrics.add(mapOfMetrics.get(path));
         }
 
@@ -68,7 +67,7 @@ public class MetricCollectorTest {
             Boolean check = false;
             for (Column column : columns) {
                 String name = column.getName();
-                if (name == listMetric.getMetricName()) {
+                if ( listMetric.getMetricName().equals(name)) {
                     check = true;
                 }
             }
@@ -76,7 +75,6 @@ public class MetricCollectorTest {
             Assert.assertTrue(check);
         }
         Assert.assertTrue(list_of_metrics.size() == 2);
-
     }
 
     public List<Map<String, String>> getMetricReplacer() {
@@ -118,24 +116,23 @@ public class MetricCollectorTest {
 
         Map<String, Metric> mapOfMetrics;
         List<Metric> list_of_metrics = new ArrayList<Metric>();
-        ;
+
 
         mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
         for (String path : mapOfMetrics.keySet()) {
-            Metric t = mapOfMetrics.get(path);
             list_of_metrics.add(mapOfMetrics.get(path));
         }
 
-        for (Metric listMetric : list_of_metrics) {
+        for (Metric metric : list_of_metrics) {
             Boolean check = false;
             for (Column column : columns) {
                 String name = column.getName();
-                if (name == listMetric.getMetricName()) {
+                if (metric.getMetricName().equals(name)) {
                     check = true;
                 }
             }
 
-            Assert.assertTrue(listMetric.getMetricValue() == num1);
+            Assert.assertTrue(metric.getMetricValue() == num1);
 
             Assert.assertTrue(check);
         }
@@ -164,21 +161,18 @@ public class MetricCollectorTest {
 
         Map<String, Metric> mapOfMetrics;
         List<Metric> list_of_metrics = new ArrayList<Metric>();
-        ;
+
 
         mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
         for (String path : mapOfMetrics.keySet()) {
-            Metric t = mapOfMetrics.get(path);
             list_of_metrics.add(mapOfMetrics.get(path));
         }
 
-        for (Metric listMetric : list_of_metrics) {
-
-            Assert.assertFalse(listMetric.getMetricPath().contains(","));
-            Assert.assertFalse(listMetric.getMetricValue().contains("%"));
+        for (Metric metric : list_of_metrics) {
+            Assert.assertFalse(metric.getMetricPath().contains(","));
+            Assert.assertFalse(metric.getMetricValue().contains("%"));
         }
         Assert.assertTrue(list_of_metrics.size() == 2);
     }
-
 
 }

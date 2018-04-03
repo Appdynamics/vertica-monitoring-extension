@@ -141,5 +141,4 @@ public class SQLMonitor extends ABaseMonitor {
         return CryptoUtil.getPassword(cryptoMap);
     }
 
-
 }

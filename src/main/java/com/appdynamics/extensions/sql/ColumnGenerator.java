@@ -24,8 +24,7 @@ public class ColumnGenerator {
     public List<Column> getColumns(Map query) {
         AssertUtils.assertNotNull(query.get("columns"), "Queries need to have columns configured.");
 
-        Map<String, Map<String, String>> filter = Maps.newLinkedHashMap();
-        filter = filterMap(query, "columns");
+        Map<String, Map<String, String>> filter = filterMap(query, "columns");
         final ObjectMapper mapper = new ObjectMapper(); // jackson’s objectmapper
         final Columns columns = mapper.convertValue(filter, Columns.class);
         return columns.getColumns();

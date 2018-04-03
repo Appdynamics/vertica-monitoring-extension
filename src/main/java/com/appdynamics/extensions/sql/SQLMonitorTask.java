@@ -39,11 +39,11 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         if (queries != null && !queries.isEmpty()) {
             try {
 
-                long timestamp1 = System.currentTimeMillis();
+                long timeBeforeConnection = System.currentTimeMillis();
                 connection = getConnection();
-                long timestamp2 = System.currentTimeMillis();
+                long timeAfterConnection = System.currentTimeMillis();
                 String dbServerDisplayName = (String) server.get("displayName");
-                logger.debug("Time taken to get Connection for " + dbServerDisplayName + " : " + (timestamp2 - timestamp1));
+                logger.debug("Time taken to get Connection for " + dbServerDisplayName + " : " + (timeAfterConnection - timeBeforeConnection));
 
                 if (connection != null) {
                     logger.debug(" Connection successful for server: " + dbServerDisplayName);
@@ -84,7 +84,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
 
         try {
             statement = getStatement(connection);
-            resultSet = getResultSet(query, statement, resultSet);
+            resultSet = getResultSet(query, statement);
             getMetricsFromResultSet(query, resultSet);
 
         } catch (SQLException e) {
@@ -126,34 +126,24 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private List<Metric> getListMetrics(Map<String, Metric> metricMap) {
         List<Metric> metricList = new ArrayList<Metric>();
         for (String path : metricMap.keySet()) {
-            Metric t = metricMap.get(path);
             metricList.add(metricMap.get(path));
         }
-//        printList(metricList);
         return metricList;
 
     }
-//
-//    private void printList(List<Metric> metrics) {
-//        System.out.println("Printing ");
-//        for (Metric metric : metrics) {
-//            System.out.println(metric.getMetricPath() + " !!! " + metric.getMetricValue());
-//        }
-//    }
-
 
     private Statement getStatement(Connection connection) throws SQLException {
         return connection.createStatement();
     }
 
-    private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException {
+    private ResultSet getResultSet(Map query, Statement statement) throws SQLException {
         String queryStmt = (String) query.get("queryStmt");
         queryStmt = substitute(queryStmt);
-        long timestamp1 = System.currentTimeMillis();
-        resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
-        long timestamp2 = System.currentTimeMillis();
+        long timeBeforeQuery = System.currentTimeMillis();
+        ResultSet resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
+        long timeAfterQuery = System.currentTimeMillis();
 
-        logger.debug("Queried the database in :" + (timestamp2 - timestamp1) + " ms for query: \n " + queryStmt);
+        logger.debug("Queried the database in :" + (timeAfterQuery - timeBeforeQuery) + " ms for query: \n " + queryStmt);
 
         return resultSet;
     }
@@ -177,12 +167,6 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
 
         stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
         stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
-
-//        String dateOld = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (previousTimestamp));
-//        String dateNew = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (currentTimestamp));
-//
-//        stmt = stmt.replace("{{previousTimestamp}}", dateOld);
-//        stmt = stmt.replace("{{currentTimestamp}}", dateNew);
 
         return stmt;
     }

@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,13 +38,11 @@ public class MetricCollector {
 
 
     public Map<String, Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
-        List<Metric> list_of_metrics = new ArrayList<Metric>();
         Map<String, Metric> mapOfMetrics = new HashMap<String, Metric>();
         logger.debug("Going through ResultSet for Database: {} and Query: {}", dbServerDisplayName, queryDisplayName);
 
         while (resultSet != null && resultSet.next()) {
-            String metricPath = "";
-            metricPath = getMetricPrefix(dbServerDisplayName, queryDisplayName);
+            String metricPath = getMetricPrefix(dbServerDisplayName, queryDisplayName);
             for (Column c : columns) {
                 if (c.getType().equals("metricPathName")) {
                     metricPath += METRIC_SEPARATOR + resultSet.getString(c.getName());
@@ -64,31 +61,14 @@ public class MetricCollector {
                         } else {
                             current_metric = new Metric(c.getName(), val, updatedMetricPath);
                         }
-                        list_of_metrics.add(current_metric);
                         mapOfMetrics.put(updatedMetricPath, current_metric);
                     }
                 }
             }
         }
-
-//        printList(list_of_metrics);
-//        printMap(mapOfMetrics);
         return mapOfMetrics;
     }
 
-//    private void printMap(Map<String, Metric> metrics) {
-//
-//        for ( String metricPath : metrics.keySet()) {
-//            System.out.println(metricPath + " -> " + metrics.get(metricPath).getMetricValue());
-//        }
-//    }
-//
-//    private void printList(List<Metric> metrics) {
-//
-//        for (Metric metric : metrics) {
-//            System.out.println(metric.getMetricPath() + " :: " + metric.getMetricValue());
-//        }
-//    }
 
     private String replaceCharacter(String metricPath) {
 
