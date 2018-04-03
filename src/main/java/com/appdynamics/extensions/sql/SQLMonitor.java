@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
+import static com.appdynamics.extensions.TaskInputArgs.ENCRYPTED_PASSWORD;
 
 
 public class SQLMonitor extends ABaseMonitor {
@@ -141,7 +141,7 @@ public class SQLMonitor extends ABaseMonitor {
 
     private String getEncryptedPassword(String encryptionKey, String encryptedPassword) {
         java.util.Map<String, String> cryptoMap = Maps.newHashMap();
-        cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
+        cryptoMap.put(ENCRYPTED_PASSWORD, encryptedPassword);
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }

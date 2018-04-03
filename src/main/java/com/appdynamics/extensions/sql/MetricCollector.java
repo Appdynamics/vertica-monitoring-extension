@@ -65,7 +65,7 @@ public class MetricCollector {
                             current_metric = new Metric(c.getName(), val, updatedMetricPath);
                         }
                         list_of_metrics.add(current_metric);
-                        mapOfMetrics.put(updatedMetricPath,current_metric);
+                        mapOfMetrics.put(updatedMetricPath, current_metric);
                     }
                 }
             }
@@ -73,7 +73,6 @@ public class MetricCollector {
 
 //        printList(list_of_metrics);
 //        printMap(mapOfMetrics);
-//        return list_of_metrics;
         return mapOfMetrics;
     }
 

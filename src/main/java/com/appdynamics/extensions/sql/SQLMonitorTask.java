@@ -43,9 +43,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 connection = getConnection();
                 long timestamp2 = System.currentTimeMillis();
                 String dbServerDisplayName = (String) server.get("displayName");
-                logger.debug("Time taken to get Connection for "+ dbServerDisplayName + " : " + (timestamp2 - timestamp1));
+                logger.debug("Time taken to get Connection for " + dbServerDisplayName + " : " + (timestamp2 - timestamp1));
 
-                if(connection != null){
+                if (connection != null) {
                     logger.debug(" Connection successful for server: " + dbServerDisplayName);
 
                     for (Map query : queries) {
@@ -123,9 +123,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
 
     }
 
-    private List<Metric>  getListMetrics(Map<String, Metric> metricMap){
+    private List<Metric> getListMetrics(Map<String, Metric> metricMap) {
         List<Metric> metricList = new ArrayList<Metric>();
-        for(String path: metricMap.keySet()){
+        for (String path : metricMap.keySet()) {
             Metric t = metricMap.get(path);
             metricList.add(metricMap.get(path));
         }
@@ -153,7 +153,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         resultSet = jdbcAdapter.queryDatabase(queryStmt, statement);
         long timestamp2 = System.currentTimeMillis();
 
-        logger.debug("Queried the database in :"+ (timestamp2-timestamp1)+ " ms for query: \n " +  queryStmt);
+        logger.debug("Queried the database in :" + (timestamp2 - timestamp1) + " ms for query: \n " + queryStmt);
 
         return resultSet;
     }
@@ -190,9 +190,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     public void onTaskComplete() {
         logger.debug("Task Complete");
         if (status == true) {
-            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat" , "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat", "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         } else {
-            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat" , "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat", "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         }
     }
 
