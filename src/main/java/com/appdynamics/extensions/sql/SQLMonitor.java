@@ -12,18 +12,18 @@ import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TaskInputArgs;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.crypto.CryptoUtil;
+import com.appdynamics.extensions.util.AssertUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.appdynamics.extensions.util.AssertUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.appdynamics.extensions.TaskInputArgs.PASSWORD_ENCRYPTED;
+import static com.appdynamics.extensions.TaskInputArgs.ENCRYPTED_PASSWORD;
 
 
 public class SQLMonitor extends ABaseMonitor {
@@ -75,6 +75,7 @@ public class SQLMonitor extends ABaseMonitor {
         AssertUtils.assertNotNull(createConnectionUrl(server), "The 'connectionUrl' field under the 'dbServers' section in config.yml is not initialised");
         AssertUtils.assertNotNull(driverName(server), "The 'driver' field under the 'dbServers' section in config.yml is not initialised");
 
+        logger.debug("Task Created");
         Map<String, String> connectionProperties = getConnectionProperties(server);
         JDBCConnectionAdapter jdbcAdapter = JDBCConnectionAdapter.create(connUrl, connectionProperties);
 
@@ -135,10 +136,9 @@ public class SQLMonitor extends ABaseMonitor {
 
     private String getEncryptedPassword(String encryptionKey, String encryptedPassword) {
         java.util.Map<String, String> cryptoMap = Maps.newHashMap();
-        cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
+        cryptoMap.put(ENCRYPTED_PASSWORD, encryptedPassword);
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
-
 
 }

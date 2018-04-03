@@ -91,6 +91,10 @@ dbServers:
 
             - name: "OPEN_FILES_LIMIT"
               type: "metricValue"
+              aggregationType: "AVERAGE"
+              timeRollupType: "AVERAGE"
+              clusterRollupType: "INDIVIDUAL"
+
 
             - name: "THREADS_LIMIT"
               type: "metricValue"

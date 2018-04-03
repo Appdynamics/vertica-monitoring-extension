@@ -46,11 +46,11 @@ public class JDBCConnectionAdapter {
                 properties.put(key, connectionProperties.get(key));
         }
 
-        logger.debug("Passed all checks for properties and attempting to connect to: "+ connUrl);
+        logger.debug("Passed all checks for properties and attempting to connect to: " + connUrl);
         long timestamp1 = System.currentTimeMillis();
         connection = DriverManager.getConnection(connUrl, properties);
         long timestamp2 = System.currentTimeMillis();
-        logger.debug("Connection received in JDBC ConnectionAdapter in :"+ (timestamp2-timestamp1)+ " ms");
+        logger.debug("Connection received in JDBC ConnectionAdapter in :" + (timestamp2 - timestamp1) + " ms");
         return connection;
     }
 

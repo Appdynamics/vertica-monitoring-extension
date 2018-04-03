@@ -3,7 +3,7 @@
 #metricPrefix: "Custom Metrics|SQL|"
 #This will create it in specific Tier. Replace <ComponentID> with TierID
 #metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Tibco ASG|"
-metricPrefix: "Custom Metrics|AVertica1|Bh5"
+metricPrefix: "Custom Metrics|Vertica|Bh5"
 
 dbServers:
     - displayName: "Vertica"
@@ -17,7 +17,7 @@ dbServers:
       #Needs to be used in conjunction with `encryptionKey`. Please read the extension documentation to generate encrypted password
       #encryptedPassword: ""
 
-      #Needs to be used in conjunction with `encryptedPassword`. Please read the extension documentation to generate encrypted password
+      #Needs to be used in conjunction wit'h `encryptedPassword`. Please read the extension documentation to generate encrypted password
       #encryptionKey: "welcome"
 
       # Replaces characters in metric name with the specified characters.
@@ -317,3 +317,195 @@ dbServers:
 
 numberOfThreads: 5
 
+
+## Make sure the metric prefix ends with a |
+##This will create this metric in all the tiers, under this path.
+#metricPrefix: "Custom Metrics|Vertica|"
+##This will create it in specific Tier. Replace <ComponentID> with TierID
+##metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Vertica|"
+#
+#
+#dbServers:
+#    - displayName: "VerticaTest"
+#      connectionUrl: "jdbc:vertica://192.168.57.102:5433/VMart"
+#      driver: "com.vertica.jdbc.Driver"
+#
+#      connectionProperties:
+#        - user: "dbadmin"
+#        - password: "password"
+#
+#      #Needs to be used in conjunction with `encryptionKey`. Please read the extension documentation to generate encrypted password
+#      #encryptedPassword: ""
+#
+#      #Needs to be used in conjunction with `encryptedPassword`. Please read the extension documentation to generate encrypted password
+#      #encryptionKey: "welcome"
+#
+#      # Replaces characters in metric name with the specified characters.
+#      # "replace" takes any regular expression
+#      # "replaceWith" takes the string to replace the matched characters
+#
+#      metricCharacterReplacer:
+#        - replace: "%"
+#          replaceWith: ""
+#        - replace: ","
+#          replaceWith: "-"
+#
+#
+#      queries:
+#        - displayName: "Active Events"
+#          queryStmt: "Select NODE_NAME, EVENT_CODE, EVENT_ID, EVENT_POSTED_COUNT from Active_events"
+#          columns:
+#            - name: "NODE_NAME"
+#              type: "metricPathName"
+#
+#            - name: "EVENT_ID"
+#              type: "metricPathName"
+#
+#            - name: "EVENT_CODE"
+#              type: "metricValue"
+#
+#            - name: "EVENT_POSTED_COUNT"
+#              type: "metricValue"
+#
+#        - displayName: "Disk Storage"
+#          queryStmt: "Select NODE_NAME, STORAGE_USAGE, RANK, THROUGHPUT, LATENCY, DISK_BLOCK_SIZE_BYTES, DISK_SPACE_USED_BLOCKS, DISK_SPACE_USED_MB, DISK_SPACE_FREE_BLOCKS, DISK_SPACE_FREE_MB, DISK_SPACE_FREE_PERCENT from DISK_STORAGE"
+#          columns:
+#            - name: "NODE_NAME"
+#              type: "metricPathName"
+#
+#            - name: "STORAGE_USAGE"
+#              type: "metricPathName"
+#
+#            - name: "RANK"
+#              type: "metricValue"
+#
+#            - name: "THROUGHPUT"
+#              type: "metricValue"
+#
+#            - name: "LATENCY"
+#              type: "metricValue"
+#
+#            - name: "DISK_BLOCK_SIZE_BYTES"
+#              type: "metricValue"
+#
+#            - name: "DISK_SPACE_USED_BLOCKS"
+#              type: "metricValue"
+#
+#            - name: "DISK_SPACE_USED_MB"
+#              type: "metricValue"
+#
+#            - name: "DISK_SPACE_FREE_BLOCKS"
+#              type: "metricValue"
+#
+#            - name: "DISK_SPACE_FREE_MB"
+#              type: "metricValue"
+#
+#            - name: "DISK_SPACE_FREE_PERCENT"
+#              type: "metricValue"
+#
+#
+#
+#        - displayName: "Node Status"
+#          queryStmt: "Select NODE_NAME, NODE_STATE from NODE_STATES"
+#          columns:
+#            - name: "NODE_NAME"
+#              type: "metricPathName"
+#
+#            - name: "NODE_STATE"
+#              type: "metricValue"
+#              properties:
+#                convert:
+#                  "INITIALIZING" : 0
+#                  "UP" : 1
+#                  "DOWN" : 2
+#                  "READY" : 3
+#                  "UNSAFE" : 4
+#                  "SHUTDOWN" : 5
+#                  "RECOVERING" : 6
+#
+#        - displayName: "Query Metrics"
+#          queryStmt: "Select NODE_NAME, ACTIVE_USER_SESSION_COUNT, ACTIVE_SYSTEM_SESSION_COUNT, TOTAL_USER_SESSION_COUNT, TOTAL_SYSTEM_SESSION_COUNT, TOTAL_ACTIVE_SESSION_COUNT, TOTAL_SESSION_COUNT, RUNNING_QUERY_COUNT, EXECUTED_QUERY_COUNT  from QUERY_METRICS "
+#          columns:
+#            - name: "NODE_NAME"
+#              type: "metricPathName"
+#
+#            - name: "ACTIVE_USER_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "ACTIVE_SYSTEM_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_USER_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_SYSTEM_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_ACTIVE_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_SESSION_COUNT"
+#              type: "metricValue"
+#
+#            - name: "RUNNING_QUERY_COUNT"
+#              type: "metricValue"
+#
+#            - name: "EXECUTED_QUERY_COUNT"
+#              type: "metricValue"
+#
+#
+#        - displayName: "System"
+#          queryStmt: "SELECT CURRENT_EPOCH, AHM_EPOCH, LAST_GOOD_EPOCH, REFRESH_EPOCH, DESIGNED_FAULT_TOLERANCE, NODE_COUNT, NODE_DOWN_COUNT, CURRENT_FAULT_TOLERANCE, CATALOG_REVISION_NUMBER, WOS_USED_BYTES, WOS_ROW_COUNT, ROS_USED_BYTES, ROS_ROW_COUNT, TOTAL_USED_BYTES, TOTAL_ROW_COUNT FROM SYSTEM"
+#          columns:
+#            - name: "CURRENT_EPOCH"
+#              type: "metricValue"
+#
+#            - name: "AHM_EPOCH"
+#              type: "metricValue"
+#
+#            - name: "LAST_GOOD_EPOCH"
+#              type: "metricValue"
+#
+#            - name: "DESIGNED_FAULT_TOLERANCE"
+#              type: "metricValue"
+#
+#            - name: "NODE_COUNT"
+#              type: "metricValue"
+#
+#            - name: "NODE_DOWN_COUNT"
+#              type: "metricValue"
+#
+#            - name: "CURRENT_FAULT_TOLERANCE"
+#              type: "metricValue"
+#
+#            - name: "CATALOG_REVISION_NUMBER"
+#              type: "metricValue"
+#
+#            - name: "WOS_USED_BYTES"
+#              type: "metricValue"
+#
+#            - name: "WOS_ROW_COUNT"
+#              type: "metricValue"
+#
+#            - name: "ROS_USED_BYTES"
+#              type: "metricValue"
+#
+#            - name: "ROS_ROW_COUNT"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_USED_BYTES"
+#              type: "metricValue"
+#
+#            - name: "TOTAL_ROW_COUNT"
+#              type: "metricValue"
+#
+#
+#numberOfThreads: 5
+#
+##Run it as a scheduled task instead of running every minute.
+##If you want to run this every minute, comment this out
+##taskSchedule:
+#  #numberOfThreads: 1
+#  #taskDelaySeconds: 120
+#
+#

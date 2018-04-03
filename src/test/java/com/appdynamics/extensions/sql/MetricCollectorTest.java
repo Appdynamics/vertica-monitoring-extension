@@ -10,11 +10,10 @@ package com.appdynamics.extensions.sql;
 
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.yml.YmlReader;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,15 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 
 /**
@@ -41,15 +33,14 @@ public class MetricCollectorTest {
     private String metricPrefix = "metricPrefix";
     private String dbServerDisplayName = "dbServer";
 
-    private String queryDisplayName = "queryName" ;
+    private String queryDisplayName = "queryName";
     private List<Map<String, String>> metricReplacer = getMetricReplacer();
 
 
     @Test
     public void testGoingThroughResultSetWithNormalValues() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        List<Metric> list_of_metrics ;
-        when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
+        when(resultSet.next()).thenReturn(Boolean.TRUE, Boolean.FALSE);
 
         String num1 = "6";
         String num2 = "7";
@@ -62,15 +53,21 @@ public class MetricCollectorTest {
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(queries);
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
+        MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
 
-        list_of_metrics = metricCollector.goingThroughResultSet(resultSet,columns);
+        Map<String, Metric> mapOfMetrics;
+        List<Metric> list_of_metrics = new ArrayList<Metric>();
 
-        for(Metric listMetric : list_of_metrics){
+        mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
+        for (String path : mapOfMetrics.keySet()) {
+            list_of_metrics.add(mapOfMetrics.get(path));
+        }
+
+        for (Metric listMetric : list_of_metrics) {
             Boolean check = false;
-            for(Column column: columns){
+            for (Column column : columns) {
                 String name = column.getName();
-                if(name == listMetric.getMetricName()){
+                if ( listMetric.getMetricName().equals(name)) {
                     check = true;
                 }
             }
@@ -78,20 +75,19 @@ public class MetricCollectorTest {
             Assert.assertTrue(check);
         }
         Assert.assertTrue(list_of_metrics.size() == 2);
-
     }
 
-    public List<Map<String, String>> getMetricReplacer(){
+    public List<Map<String, String>> getMetricReplacer() {
 
         List<Map<String, String>> replacerList = new ArrayList<Map<String, String>>();
         Map<String, String> replaceThis1 = new HashMap<String, String>();
         Map<String, String> replaceThis2 = new HashMap<String, String>();
 
-        replaceThis1.put("replace","%");
-        replaceThis1.put("replaceWith","");
+        replaceThis1.put("replace", "%");
+        replaceThis1.put("replaceWith", "");
 
-        replaceThis2.put("replace",",");
-        replaceThis2.put("replaceWith","-");
+        replaceThis2.put("replace", ",");
+        replaceThis2.put("replaceWith", "-");
 
         replacerList.add(replaceThis1);
         replacerList.add(replaceThis2);
@@ -103,8 +99,7 @@ public class MetricCollectorTest {
     @Test
     public void testGoingThroughResultSetWithConvertMap() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        List<Metric> list_of_metrics ;
-        when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
+        when(resultSet.next()).thenReturn(Boolean.TRUE, Boolean.FALSE);
 
 
         String num1 = "DOWN";
@@ -116,20 +111,28 @@ public class MetricCollectorTest {
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(queries);
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
+        MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
 
-        list_of_metrics = metricCollector.goingThroughResultSet(resultSet,columns);
 
-        for(Metric listMetric : list_of_metrics){
+        Map<String, Metric> mapOfMetrics;
+        List<Metric> list_of_metrics = new ArrayList<Metric>();
+
+
+        mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
+        for (String path : mapOfMetrics.keySet()) {
+            list_of_metrics.add(mapOfMetrics.get(path));
+        }
+
+        for (Metric metric : list_of_metrics) {
             Boolean check = false;
-            for(Column column: columns){
+            for (Column column : columns) {
                 String name = column.getName();
-                if(name == listMetric.getMetricName()){
+                if (metric.getMetricName().equals(name)) {
                     check = true;
                 }
             }
 
-            Assert.assertTrue(listMetric.getMetricValue() == num1);
+            Assert.assertTrue(metric.getMetricValue() == num1);
 
             Assert.assertTrue(check);
         }
@@ -140,8 +143,7 @@ public class MetricCollectorTest {
     @Test
     public void testingForCommaAndPercentSignRemoval() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        List<Metric> list_of_metrics ;
-        when(resultSet.next()).thenReturn(Boolean.TRUE,Boolean.FALSE);
+        when(resultSet.next()).thenReturn(Boolean.TRUE, Boolean.FALSE);
 
         String num1 = "6%";
         String num2 = "7";
@@ -154,21 +156,23 @@ public class MetricCollectorTest {
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(queries);
 
-        MetricCollector metricCollector = new MetricCollector(metricPrefix,dbServerDisplayName,queryDisplayName, metricReplacer);
+        MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
 
-        list_of_metrics = metricCollector.goingThroughResultSet(resultSet,columns);
 
-        for(Metric listMetric : list_of_metrics){
+        Map<String, Metric> mapOfMetrics;
+        List<Metric> list_of_metrics = new ArrayList<Metric>();
 
-            Assert.assertFalse(listMetric.getMetricPath().contains(","));
-            Assert.assertFalse(listMetric.getMetricValue().contains("%"));
+
+        mapOfMetrics = metricCollector.goingThroughResultSet(resultSet, columns);
+        for (String path : mapOfMetrics.keySet()) {
+            list_of_metrics.add(mapOfMetrics.get(path));
+        }
+
+        for (Metric metric : list_of_metrics) {
+            Assert.assertFalse(metric.getMetricPath().contains(","));
+            Assert.assertFalse(metric.getMetricValue().contains("%"));
         }
         Assert.assertTrue(list_of_metrics.size() == 2);
-
     }
-
-
-
-
 
 }
