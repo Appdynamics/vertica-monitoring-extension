@@ -42,8 +42,8 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
                 long timestamp1 = System.currentTimeMillis();
                 connection = getConnection();
                 long timestamp2 = System.currentTimeMillis();
-                logger.debug("Time taken to get Connection: " + (timestamp2 - timestamp1));
                 String dbServerDisplayName = (String) server.get("displayName");
+                logger.debug("Time taken to get Connection for "+ dbServerDisplayName + " : " + (timestamp2 - timestamp1));
 
                 if(connection != null){
                     logger.debug(" Connection successful for server: " + dbServerDisplayName);
@@ -83,7 +83,7 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
         ResultSet resultSet = null;
 
         try {
-            statement = getStatement(connection, statement);
+            statement = getStatement(connection);
             resultSet = getResultSet(query, statement, resultSet);
             getMetricsFromResultSet(query, resultSet);
 
@@ -108,10 +108,15 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     private void getMetricsFromResultSet(Map query, ResultSet resultSet) throws SQLException {
         String dbServerDisplayName = (String) server.get("displayName");
         String queryDisplayName = (String) query.get("displayName");
+
+        logger.debug("Received ResultSet and now extracting metrics for query {}", queryDisplayName);
+
         ColumnGenerator columnGenerator = new ColumnGenerator();
         List<Column> columns = columnGenerator.getColumns(query);
         List<Map<String, String>> metricReplacer = getMetricReplacer();
+
         MetricCollector metricCollector = new MetricCollector(metricPrefix, dbServerDisplayName, queryDisplayName, metricReplacer);
+
         Map<String, Metric> metricMap = metricCollector.goingThroughResultSet(resultSet, columns);
         List<Metric> metricList = getListMetrics(metricMap);
         metricWriter.transformAndPrintMetrics(metricList);
@@ -124,22 +129,21 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
             Metric t = metricMap.get(path);
             metricList.add(metricMap.get(path));
         }
-        printList(metricList);
+//        printList(metricList);
         return metricList;
 
     }
+//
+//    private void printList(List<Metric> metrics) {
+//        System.out.println("Printing ");
+//        for (Metric metric : metrics) {
+//            System.out.println(metric.getMetricPath() + " !!! " + metric.getMetricValue());
+//        }
+//    }
 
-    private void printList(List<Metric> metrics) {
-        System.out.println("Printing ");
-        for (Metric metric : metrics) {
-            System.out.println(metric.getMetricPath() + " !!! " + metric.getMetricValue());
-        }
-    }
 
-
-    private Statement getStatement(Connection connection, Statement statement) throws SQLException {
-        statement = connection.createStatement();
-        return statement;
+    private Statement getStatement(Connection connection) throws SQLException {
+        return connection.createStatement();
     }
 
     private ResultSet getResultSet(Map query, Statement statement, ResultSet resultSet) throws SQLException {
@@ -170,15 +174,15 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     }
 
     private String substitute(String stmt) {
-//        String stmt = statement;
 
-        String dateOld = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (previousTimestamp));
-        String dateNew = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (currentTimestamp));
+        stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
+        stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
 
-//        stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
-//        stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
-        stmt = stmt.replace("{{previousTimestamp}}", dateOld);
-        stmt = stmt.replace("{{currentTimestamp}}", dateNew);
+//        String dateOld = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (previousTimestamp));
+//        String dateNew = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (currentTimestamp));
+//
+//        stmt = stmt.replace("{{previousTimestamp}}", dateOld);
+//        stmt = stmt.replace("{{currentTimestamp}}", dateNew);
 
         return stmt;
     }
@@ -186,9 +190,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     public void onTaskComplete() {
         logger.debug("Task Complete");
         if (status == true) {
-            metricWriter.printMetric(metricPrefix + "|" + (String) server.get("displayName"), "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat" , "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         } else {
-            metricWriter.printMetric(metricPrefix + "|" + (String) server.get("displayName"), "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat" , "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         }
     }
 

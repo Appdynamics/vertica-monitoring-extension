@@ -9,6 +9,7 @@
 package com.appdynamics.extensions.sql;
 
 import com.appdynamics.extensions.metrics.Metric;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ public class MetricCollector {
     private String dbServerDisplayName;
     private String queryDisplayName;
     private List<Map<String, String>> metricReplacer;
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MetricCollector.class);
 
 
     public MetricCollector(String metricPrefix, String dbServerDisplayName, String queryDisplayName, List<Map<String, String>> metricReplacer) {
@@ -39,6 +41,7 @@ public class MetricCollector {
     public Map<String, Metric> goingThroughResultSet(ResultSet resultSet, List<Column> columns) throws SQLException {
         List<Metric> list_of_metrics = new ArrayList<Metric>();
         Map<String, Metric> mapOfMetrics = new HashMap<String, Metric>();
+        logger.debug("Going through ResultSet for Database: {} and Query: {}", dbServerDisplayName, queryDisplayName);
 
         while (resultSet != null && resultSet.next()) {
             String metricPath = "";
