@@ -4,18 +4,37 @@
 
 The Vertica Monitoring Extension collects the stats by querying Vertica DB system tables and reports them to the AppDynamics Controller.
 
-This extension works only with the standalone machine agent.
 
 ## Prerequisite
+
+In order to use this extension, you do need a [Standalone JAVA Machine Agent](https://docs.appdynamics.com/display/PRO44/Java+Agent) or [SIM Agent](https://docs.appdynamics.com/display/PRO44/Server+Visibility). 
+For more details on downloading these products, please visit https://download.appdynamics.com/.
+
+This is very essential in order to establish a connection with the Vertica DB to get the metrics.
+The extension needs to be able to connect to Vertica DB in order to collect and send metrics. 
+To do this, you will have to either establish a remote connection in between the extension and the product, or have an agent on the same machine running the product in order for the extension to collect and send the metrics.
+
 Vertica JDBC library is NOT in maven repo. You will have to add the vertica jdbc jar file in order to get this extension to work.
 Once you have the jar file, place it in the monitors/Vertica-Monitor/ folder and update the classpath for the jar file as follows.
 Open the Monitor.xml file and update the classpath:
             <classpath>vertica-monitoring-extension.jar;<Name of Vertica Jar file>.jar</classpath>
 
-This is very essential in order to establish a connection with the Vertica DB to get the metrics.
 
 
-## Installing Vertica
+## Installation
+1. Run 'mvn clean install' from the vertica-monitoring-extension directory
+2. Download the file Vertica-Monitor.zip found in the 'target' directory into /<machineagent install dir/>/monitors/
+3. Unzip the downloaded file and cd into VerticaMonitor
+4. Open the config.yml file and provide values for host, port, database, user and password. You can also configure system table details for which you want to get the stats.
+5. Restart the Machine Agent.
+6. In the AppDynamics controller, look for events in Custom Metrics|Vertica|
+
+**Note:** Please place the extension in the **"monitors"** directory of your **Machine Agent** installation 
+directory. Do not place the extension in the **"extensions"** directory of your **Machine Agent** installation directory.
+          
+## Configuration
+
+### Installing Vertica
 
 1. Download the HP Vertica server package.
 2. Login as root
@@ -36,16 +55,8 @@ This is very essential in order to establish a connection with the Vertica DB to
    To create an example database please visit: [Installing and Connecting to the VMart Example Database](https://my.vertica.com/docs/7.0.x/HTML/index.htm#Authoring/GettingStartedGuide/InstallingAndConnectingToVMart/InstallingandConnecting.htm%3FTocPath%3DGetting%20Started%20Guide%7CInstalling%20and%20Connecting%20to%20the%20VMart%20Example%20Database%7C_____0)
 
 
-## Installation
-1. Run 'mvn clean install' from the vertica-monitoring-extension directory
-2. Download the file Vertica-Monitor.zip found in the 'target' directory into /<machineagent install dir/>/monitors/
-3. Unzip the downloaded file and cd into VerticaMonitor
-4. Open the config.yml file and provide values for host, port, database, user and password. You can also configure system table details for which you want to get the stats.
-5. Restart the Machine Agent.
-6. In the AppDynamics controller, look for events in Custom Metrics|Vertica|
 
-
-## Directory Structure
+### Directory Structure
 
 <table><tbody>
 <tr>
@@ -71,9 +82,9 @@ This is very essential in order to establish a connection with the Vertica DB to
 </tbody>
 </table>
 
-## Config files
+### Config files
 
-### config.yml
+#### config.yml
 
 
 | Param | Description |
@@ -85,7 +96,7 @@ This is very essential in order to establish a connection with the Vertica DB to
 | metricPrefix | Metric prefix which is shown in the controller. Default is "Custom Metrics\|Vertica\|" |
 
 
-### Here is a demo config.yml file.
+#### Here is a demo config.yml file.
 ~~~~
 #Make sure the metric prefix ends with a |
 #This will create this metric in all the tiers, under this path.
@@ -408,7 +419,7 @@ numberOfThreads: 5
 
 ~~~~
 
-###  monitor.xml
+####  monitor.xml
 ~~~~
 <monitor>
     <name>Vertica-Monitor</name>
@@ -575,46 +586,41 @@ Provides history about system resources, such as memory, CPU, network, disk, I/O
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_rx_kbytes_per_second | Average number of kilobytes received from network (incoming) per second during the history interval |
 | Custom Metrics/Vertica/System Resource Usage/{NODE_NAME}/net_tx_kbytes_per_second | Average number of kilobytes transmitting to network (outgoing) per second during the history interval |
 
-## Credentials Encryption ##
+## Credentials Encryption
+Please visit [this](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-Password-Encryption-with-Extensions/ta-p/29397) page to get detailed instructions on password encryption. The steps in this document will guide you through the whole process.
 
-Please visit [this page ](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-Password-Encryption-with-Extensions/ta-p/29397)to get detailed instructions on password encryption. The steps in this document will guide you through the whole process.
+## Extensions Workbench
+Workbench is an inbuilt feature provided with each extension in order to assist you to fine tune the extension setup before you actually deploy it on the controller. Please review the following [document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-the-Extensions-WorkBench/ta-p/30130) for how to use the Extensions WorkBench
 
+## Troubleshooting
+Please follow the steps listed in the [extensions troubleshooting document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) in order to troubleshoot your issue. These are a set of common issues that customers might have faced during the installation of the extension. If these don't solve your issue, please follow the last step on the troubleshooting-document to contact the support team.
 
-## Workbench ##
+## Support Tickets
+If after going through the Troubleshooting Document you have not been able to get your extension working, please file a ticket and add the following information.
 
-Workbench is a feature by which you can preview the metrics before registering it with the controller. This is useful if you want to fine tune the configurations. Workbench is embedded into the extension jar.
-To use the workbench:
-1. Follow all the installation steps
-2. Start the workbench with the command: 
+Please provide the following in order for us to assist you better.  
 
-~~~~
-  java -jar /monitors/Vertica-Monitor/vertica-monitoring-extension.jar
+1. Stop the running machine agent .
+2. Delete all existing logs under <MachineAgent>/logs .
+3. Please enable debug logging by editing the file <MachineAgent>/conf/logging/log4j.xml. Change the level value of the following <logger> elements to debug. 
+   ```
+   <logger name="com.singularity">
+   <logger name="com.appdynamics">
+     ```
+4. Start the machine agent and please let it run for 10 mins. Then zip and upload all the logs in the directory <MachineAgent>/logs/*.
+5. Attach the zipped <MachineAgent>/conf/* directory here.
+ 6. Attach the zipped <MachineAgent>/monitors/<ExtensionMonitor> directory here .
 
-~~~~
-3. This starts an http server at http://host:9090/. This can be accessed from the browser.
-4. If the server is not accessible from outside/browser, you can use the following end points to see the list of registered metrics and errors.
-~~~~
-    # Get the stats
-    curl http://localhost:9090/api/stats
-    # Get the registered metrics
-    curl http://localhost:9090/api/metric-paths
-
-~~~~
-5. You can make the changes to config.yml and validate it from the browser or the API
-6. Once the configuration is complete, you can kill the workbench and start the Machine Agent.
-
-
-## Custom Dashboard ##
-![](https://github.com/Appdynamics/vertica-monitoring-extension/raw/master/vertica_dashboard.png)
+For any support related questions, you can also contact help@appdynamics.com.
 
 ## Contributing
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/vertica-monitoring-extension).
 
-Always feel free to fork and contribute any changes directly here on GitHub
-
-## Community
-
-Find out more in the [AppSphere](https://www.appdynamics.com/community/exchange/extension/vertica-monitoring-extension/) community.
-
-## Support
-
-For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
+## Version
+|          Name            |  Version   |
+|--------------------------|------------|
+|Extension Version         |1.2.5       |
+|Controller Compatibility  |3.7 or Later|
+|Product Tested On         |Vertica 7.0|
+|Last Update               |04/03/2018 |
+|List of Changes           |[Change log](https://github.com/Appdynamics/vertica-monitoring-extension/changelog.md) |
