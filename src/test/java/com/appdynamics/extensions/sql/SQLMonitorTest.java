@@ -8,21 +8,12 @@
 
 package com.appdynamics.extensions.sql;
 
-import com.appdynamics.extensions.sql.SQLMonitor;
-import com.google.common.collect.Maps;
-import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Created by bhuvnesh.kumar on 9/28/17.
@@ -41,7 +32,7 @@ public class SQLMonitorTest {
 
 
     @Test
-    public void testSQLMonitoringExtension () throws TaskExecutionException{
+    public void testSQLMonitoringExtension() throws TaskExecutionException {
         Map<String, String> taskArgs = new HashMap<String, String>();
         taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
         testClass.execute(taskArgs, null);
