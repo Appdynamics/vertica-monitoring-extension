@@ -28,12 +28,20 @@
     </properties>
 
     <dependencies>
+        <!-- TODO Remove this -->
+        <dependency>
+            <groupId>com.vertica</groupId>
+            <artifactId>vertica-jdbc</artifactId>
+            <version>7.0.1-0</version>
+            <systemPath>${lib.dir}/vertica-jdbc-7.0.1-0-6.0.0.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>machine-agent</artifactId>
             <version>3.7.11</version>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>com.appdynamics</groupId>

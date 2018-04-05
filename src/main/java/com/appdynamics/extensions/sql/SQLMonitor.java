@@ -22,7 +22,13 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+//TODO Remove this
 
+import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 import static com.appdynamics.extensions.TaskInputArgs.ENCRYPTED_PASSWORD;
 
 
@@ -139,6 +145,26 @@ public class SQLMonitor extends ABaseMonitor {
         cryptoMap.put(ENCRYPTED_PASSWORD, encryptedPassword);
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
+    }
+    //TODO Remove this
+    public static void main(String[] args) throws TaskExecutionException {
+
+        final SQLMonitor monitor = new SQLMonitor();
+        final Map<String, String> taskArgs = new HashMap<String, String>();
+
+        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
+//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config1.yml");
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                try {
+                    monitor.execute(taskArgs, null);
+                } catch (Exception e) {
+                    logger.error("Error while running the task", e);
+                }
+            }
+        }, 2, 10, TimeUnit.SECONDS);
     }
 
 }

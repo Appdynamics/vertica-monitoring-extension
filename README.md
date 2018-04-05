@@ -8,7 +8,7 @@ The Vertica Monitoring Extension collects the stats by querying Vertica DB syste
 ## Prerequisite
 
 In order to use this extension, you do need a [Standalone JAVA Machine Agent](https://docs.appdynamics.com/display/PRO44/Java+Agent) or [SIM Agent](https://docs.appdynamics.com/display/PRO44/Server+Visibility). 
-For more details on downloading these products, please visit https://download.appdynamics.com/.
+For more details on downloading these products, please visit [download.appdynamics.com](https://download.appdynamics.com/).
 
 This is very essential in order to establish a connection with the Vertica DB to get the metrics.
 The extension needs to be able to connect to Vertica DB in order to collect and send metrics. 
@@ -623,4 +623,4 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 |Controller Compatibility  |3.7 or Later|
 |Product Tested On         |Vertica 7.0|
 |Last Update               |04/03/2018 |
-|List of Changes           |[Change log](https://github.com/Appdynamics/vertica-monitoring-extension/changelog.md) |
+|List of Changes           |[Change log](https://github.com/Appdynamics/vertica-monitoring-extension/blob/master/changelog.md) |
