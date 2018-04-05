@@ -146,25 +146,5 @@ public class SQLMonitor extends ABaseMonitor {
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
-    //TODO Remove this
-    public static void main(String[] args) throws TaskExecutionException {
-
-        final SQLMonitor monitor = new SQLMonitor();
-        final Map<String, String> taskArgs = new HashMap<String, String>();
-
-        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config_generic.yml");
-//        taskArgs.put(CONFIG_ARG, "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/vertica-monitoring-extension/src/test/resources/conf/config1.yml");
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                try {
-                    monitor.execute(taskArgs, null);
-                } catch (Exception e) {
-                    logger.error("Error while running the task", e);
-                }
-            }
-        }, 2, 10, TimeUnit.SECONDS);
-    }
 
 }

@@ -14,7 +14,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>vertica-monitoring-extension</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
     <packaging>jar</packaging>
     <name>vertica-monitoring-extension</name>
     <url>http://maven.apache.org</url>
@@ -28,14 +28,6 @@
     </properties>
 
     <dependencies>
-        <!-- TODO Remove this -->
-        <dependency>
-            <groupId>com.vertica</groupId>
-            <artifactId>vertica-jdbc</artifactId>
-            <version>7.0.1-0</version>
-            <systemPath>${lib.dir}/vertica-jdbc-7.0.1-0-6.0.0.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.appdynamics</groupId>
