@@ -142,7 +142,7 @@ dbServers:
               type: "metricValue"
 
         - displayName: "IO Usage"
-          queryStmt: "Select NODE_NAME, READ_KBYTES_PER_SEC, WRITTEN_KBYTES_PER_SEC from IO_USAGE where start_time >= (select (varchar '{{previousTimestamp}} AMERICA/LOS_ANGELES')::timestamp) and end_time < (select (varchar '{{currentTimestamp}} AMERICA/LOS_ANGELES')::timestamp);"
+          queryStmt: "Select NODE_NAME, READ_KBYTES_PER_SEC, WRITTEN_KBYTES_PER_SEC from IO_USAGE where start_time  >= TO_TIMESTAMP({{previousTimestamp}});"
           columns:
             - name: "NODE_NAME"
               type: "metricPathName"
@@ -247,7 +247,7 @@ dbServers:
               type: "metricValue"
 
         - displayName: "System Resource Usage"
-          queryStmt: "SELECT NODE_NAME, AVERAGE_MEMORY_USAGE_PERCENT, AVERAGE_CPU_USAGE_PERCENT, NET_RX_KBYTES_PER_SECOND, NET_TX_KBYTES_PER_SECOND, IO_READ_KBYTES_PER_SECOND, IO_WRITTEN_KBYTES_PER_SECOND FROM SYSTEM_RESOURCE_USAGE where end_time < (select (varchar '{{previousTimestamp}} AMERICA/LOS_ANGELES')::timestamp);"
+          queryStmt: "SELECT NODE_NAME, AVERAGE_MEMORY_USAGE_PERCENT, AVERAGE_CPU_USAGE_PERCENT, NET_RX_KBYTES_PER_SECOND, NET_TX_KBYTES_PER_SECOND, IO_READ_KBYTES_PER_SECOND, IO_WRITTEN_KBYTES_PER_SECOND FROM SYSTEM_RESOURCE_USAGE where end_time < TO_TIMESTAMP({{previousTimestamp}});"
           columns:
             - name: "NODE_NAME"
               type: "metricPathName"

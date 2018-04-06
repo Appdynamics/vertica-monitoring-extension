@@ -165,17 +165,8 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
 
     private String substitute(String stmt) {
 
-//        stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
-//        stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
-
-        String dateOld = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (previousTimestamp));
-        String dateNew = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date (currentTimestamp));
-
-        stmt = stmt.replace("{{previousTimestamp}}", dateOld);
-        stmt = stmt.replace("{{currentTimestamp}}", dateNew);
-        logger.debug("previousTimestamp : {}", dateOld);
-        logger.debug("currentTimestamp: {}", dateNew);
-
+        stmt = stmt.replace("{{previousTimestamp}}", Long.toString(previousTimestamp));
+        stmt = stmt.replace("{{currentTimestamp}}", Long.toString(currentTimestamp));
 
         return stmt;
     }

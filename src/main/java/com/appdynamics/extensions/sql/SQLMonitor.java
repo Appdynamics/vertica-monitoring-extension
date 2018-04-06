@@ -29,7 +29,7 @@ public class SQLMonitor extends ABaseMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(SQLMonitor.class);
     private long previousTimestamp = 0;
-    private long currentTimestamp = System.currentTimeMillis();
+    private long currentTimestamp = System.currentTimeMillis() / 1000L;
     private static final String CONFIG_ARG = "config-file";
 
     @Override
@@ -47,7 +47,7 @@ public class SQLMonitor extends ABaseMonitor {
 
         List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("dbServers");
         previousTimestamp = currentTimestamp;
-        currentTimestamp = System.currentTimeMillis();
+        currentTimestamp = System.currentTimeMillis() / 1000L;
         if (previousTimestamp != 0) {
             for (Map<String, String> server : servers) {
                 try {
@@ -139,5 +139,6 @@ public class SQLMonitor extends ABaseMonitor {
         cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
         return CryptoUtil.getPassword(cryptoMap);
     }
+
 
 }
