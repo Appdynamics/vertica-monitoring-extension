@@ -22,13 +22,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-//TODO Remove this
-
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.HashMap;
 import static com.appdynamics.extensions.TaskInputArgs.ENCRYPTED_PASSWORD;
 
 
