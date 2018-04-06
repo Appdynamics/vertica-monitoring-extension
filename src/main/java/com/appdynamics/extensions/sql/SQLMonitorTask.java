@@ -173,6 +173,8 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
 
         stmt = stmt.replace("{{previousTimestamp}}", dateOld);
         stmt = stmt.replace("{{currentTimestamp}}", dateNew);
+        logger.debug("previousTimestamp : {}", dateOld);
+        logger.debug("currentTimestamp: {}", dateNew);
 
 
         return stmt;
@@ -181,9 +183,9 @@ public class SQLMonitorTask implements AMonitorTaskRunnable {
     public void onTaskComplete() {
         logger.debug("Task Complete");
         if (status == true) {
-            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat", "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "|HeartBeat", "1", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         } else {
-            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "HeartBeat", "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
+            metricWriter.printMetric(metricPrefix + "|" + server.get("displayName") + "|HeartBeat", "0", "AVERAGE", "AVERAGE", "INDIVIDUAL");
         }
     }
 
